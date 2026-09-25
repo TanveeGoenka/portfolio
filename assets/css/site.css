@@ -1,0 +1,457 @@
+/* ==========================================================================
+   Tanvee Goenka: portfolio
+   Shared styles: tokens, base, header, footer and the home page.
+   Values are taken 1:1 from the Figma file (desktop frame: 1440px).
+   ========================================================================== */
+
+:root {
+  --teal: #00959f;
+  --teal-600: #1ea1aa;
+  --teal-500: #39acb4;
+  --teal-100: #cee9eb;
+  --teal-tint: #f4f9fa;
+  --ink: #0b0b0b;
+  --ink-soft: #505050;
+  --pill: #f7f7f7;
+  --white: #fff;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-ui: 'Rubik', system-ui, sans-serif;
+  --font-display: 'Afacad', system-ui, sans-serif;
+
+  --header-h: 109px;
+  --page-max: 1440px;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, ul { margin: 0; }
+img, svg, video { display: block; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; border-radius: 4px; }
+[id] { scroll-margin-top: calc(var(--header-h) - 20px); }
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Header (Div [framer-lnfr45])
+   -------------------------------------------------------------------------- */
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: var(--header-h);
+  padding: 0 37px 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #fff -20.64%, rgba(255, 255, 255, 0) 76.61%);
+  pointer-events: none;
+}
+.site-header > * { pointer-events: auto; }
+
+.brand {
+  position: relative;
+  flex: none;
+  width: 185px;
+  height: 100px;
+  margin-top: 1px;
+}
+.brand__mark {
+  position: absolute;
+  left: -17.5px;
+  top: 2px;
+  width: 113px;
+  height: 113px;
+}
+.brand__name {
+  position: absolute;
+  left: 69px;
+  top: 38px;
+  width: 98px;
+  font: 400 21.6px/1.1 var(--font-sans);
+  color: #000;
+}
+
+.site-nav {
+  display: flex;
+  gap: 40px;
+  font: 300 16px/19.2px var(--font-ui);
+  color: var(--ink-soft);
+}
+.site-nav a { transition: color 0.2s ease; }
+.site-nav a:hover { color: var(--ink); }
+
+/* --------------------------------------------------------------------------
+   Footer (Div [framer-vAw4K])
+   -------------------------------------------------------------------------- */
+.site-footer {
+  background: var(--white);
+}
+.site-footer__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 47px 55px 48px;
+  border-radius: 64px 64px 0 0;
+  background: var(--teal);
+  color: var(--white);
+}
+.site-footer__id {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.site-footer__name { font: 500 26px/26px var(--font-display); }
+.site-footer__role {
+  font: 400 12px/16.8px var(--font-ui);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--teal-100);
+}
+.site-footer__nav {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  width: 100%;
+  margin-top: 40px;
+  padding-bottom: 6.8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  font: 400 14px/16.8px var(--font-ui);
+}
+.site-footer__nav a:hover,
+.site-footer__social a:hover { opacity: 0.75; }
+.site-footer__bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  height: 26px;
+  margin-top: 32.4px;
+}
+.site-footer__copy {
+  margin-top: 3px;
+  font: 400 14px/19.6px var(--font-ui);
+  color: var(--teal-100);
+}
+.site-footer__social { display: flex; gap: 32px; }
+.site-footer__social a { display: block; transition: opacity 0.2s ease; }
+
+/* --------------------------------------------------------------------------
+   Home: shared bits
+   -------------------------------------------------------------------------- */
+.home,
+#case-studies { display: flex; flex-direction: column; gap: 60px; }
+.home { padding-bottom: 60px; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 32px;
+  background: var(--pill);
+  font: 500 13.7px/19.6px var(--font-sans);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.eyebrow svg { width: 15px; height: 15px; }
+.eyebrow .icon-folder { color: #31bda3; }
+
+.section-title {
+  font: 500 38px/45.6px var(--font-sans);
+  color: var(--ink);
+  text-align: center;
+}
+
+.section-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 24px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero (Home)
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  height: 781px;
+  background: linear-gradient(112.48deg, #fff 0%, #ecf9fa 75.77%, #f8fdfe 95.89%);
+}
+.hero__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 300px;
+  text-align: center;
+}
+.hero__welcome {
+  padding: 2px 0;
+  font: 300 21px/24px var(--font-sans);
+  color: var(--ink);
+}
+.hero__rotator {
+  display: grid;
+  width: min(917px, 100%);
+  padding: 0 36px;
+  font: 400 48px/67.2px var(--font-sans);
+  color: var(--ink);
+}
+/* every phrase sits in the same grid cell, so the box never jumps */
+.hero__rotator span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 0.1s cubic-bezier(0, 0, 0.58, 1);
+}
+.hero__rotator span.is-active { opacity: 1; }
+.hero__rotator span:not(.is-active) { visibility: hidden; }
+
+.contact {
+  position: absolute;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.contact__label {
+  font: 400 12px/16.8px var(--font-sans);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.contact__links {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  font: 300 12px/16.8px var(--font-sans);
+  color: var(--ink);
+}
+.contact__links a {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.contact__links a:hover span { text-decoration: underline; text-underline-offset: 2px; }
+.contact__links .icon-id-card { width: 24px; height: 24px; }
+.contact__links .icon-linkedin-small { width: 17px; height: 17px; }
+
+/* --------------------------------------------------------------------------
+   Case study cards (Div [framer-p4r1wx])
+   -------------------------------------------------------------------------- */
+.projects {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  padding: 40px 24px;
+}
+.project {
+  width: min(1145px, 100%);
+  padding: 48px;
+  border-radius: 40px;
+  background: var(--teal-tint);
+}
+.project__row {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+.project__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 462px;
+  min-height: 335.6px;
+  flex: none;
+}
+.project__label {
+  font: 400 14px/16.8px var(--font-ui);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.project__title {
+  margin-top: 0;
+  font: 500 32px/46px var(--font-sans);
+  color: var(--ink);
+}
+.project__text {
+  min-height: 70px;
+  margin-top: 8px;
+  font: 400 15.9px/25.6px var(--font-sans);
+  color: var(--ink-soft);
+}
+/* one-off style carried over from the Figma file (first line of the Fermio card) */
+.project__text .tight {
+  font-size: 15.75px;
+  line-height: 1.5;
+  letter-spacing: -0.05em;
+  color: #3e3e3e;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 0 24px;
+  list-style: none;
+}
+.tag {
+  padding: 7px;
+  border: 1px solid rgba(0, 149, 159, 0.5);
+  border-radius: 100px;
+  background: rgba(0, 149, 159, 0.05);
+  font: 400 11.4px/15px var(--font-sans);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.button {
+  position: relative;
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  height: 48.8px;
+  padding: 0 24px;
+  overflow: hidden;
+  border-radius: 365px;
+  background: var(--teal);
+  font: 500 14px/16.8px var(--font-ui);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--white);
+}
+/* Variant2 (hover) adds a 20% black layer */
+.button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.1s cubic-bezier(0, 0, 0.58, 1);
+}
+.button:hover::after,
+.button:focus-visible::after { opacity: 1; }
+.project__media {
+  flex: 1 1 auto;
+  min-width: 0;
+  aspect-ratio: 537 / 324;
+  border-radius: 9.37px;
+  overflow: hidden;
+  background: #c4c4c4;
+}
+.project__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.project--media-first .project__media { background: #1e1e24; }
+
+/* --------------------------------------------------------------------------
+   Key strengths (Div [framer-1vkt6qh])
+   -------------------------------------------------------------------------- */
+.strengths {
+  padding: 120px 24px;
+}
+.strengths__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(1152px, 100%);
+  margin: 0 auto;
+}
+.strengths__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 360px));
+  justify-content: space-between;
+  row-gap: 24px;
+  list-style: none;
+  padding: 0;
+}
+.strength {
+  display: flex;
+  gap: 8px;
+  min-height: 127px;
+  padding: 16px;
+  border-radius: 24px;
+  background: var(--teal-tint);
+}
+.strength__icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  padding: 18px 7px;
+  color: var(--teal-500);
+}
+.strength__icon svg { overflow: visible; }
+/* the first card is 8px wider in the design */
+@media (min-width: 1101px) { .strength:first-child { margin-right: -8.15px; } }
+.strength__title {
+  font: 500 20px/28px var(--font-display);
+  color: var(--ink);
+}
+.strength__title--inter { font-family: var(--font-sans); }
+.strength__text {
+  margin-top: 4px;
+  font: 400 14px/21px var(--font-ui);
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Smaller screens (the Figma file only has the 1440px desktop design, so
+   these rules keep the same look while letting the layout reflow)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1100px) {
+  .project__row { flex-direction: column; align-items: stretch; gap: 32px; }
+  .project--media-first .project__row { flex-direction: column-reverse; }
+  .project__body { width: auto; }
+  .project__media { width: 100%; }
+  .strengths__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+}
+
+@media (max-width: 760px) {
+  :root { --header-h: 76px; }
+  .site-header { padding: 0 16px; }
+  .brand { transform: scale(0.72); transform-origin: left center; margin-top: 4px; margin-right: -52px; }
+  .site-nav { gap: 16px; font-size: 14px; }
+  .site-nav a:nth-child(1) { display: none; }
+  .hero { height: auto; min-height: 640px; padding-bottom: 140px; }
+  .hero__intro { padding-top: 220px; }
+  .hero__rotator { font-size: 34px; line-height: 1.35; padding: 0 20px; }
+  .section-title { font-size: 30px; line-height: 1.2; }
+  .projects { padding: 24px 16px; gap: 32px; }
+  .project { padding: 24px; border-radius: 28px; }
+  .project__title { font-size: 26px; line-height: 1.35; }
+  .project__title br, .project__text br { display: none; }
+  .strengths { padding: 72px 16px; }
+  .strengths__grid { grid-template-columns: 1fr; }
+  .site-footer__inner { padding: 48px 20px 32px; border-radius: 40px 40px 0 0; }
+  .site-footer__nav { gap: 20px; flex-wrap: wrap; }
+}

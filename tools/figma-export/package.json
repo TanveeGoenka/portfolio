@@ -1,0 +1,13 @@
+{
+  "name": "figma-export",
+  "private": true,
+  "description": "Regenerates the case-study pages and image assets from the Figma .fig file",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "fzstd": "^0.1.1",
+    "kiwi-schema": "^0.5.0",
+    "pako": "^2.1.0"
+  }
+}

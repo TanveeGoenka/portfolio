@@ -1,0 +1,5 @@
+tools/figma-export/node_modules/
+.DS_Store
+# Source Figma file: 269MB, over GitHub's 100MB limit and not needed to run the site.
+# Re-download from Figma and re-run tools/figma-export/build.js to regenerate the case studies.
+Portfolio from Figma.fig
