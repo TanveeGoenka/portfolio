@@ -51,9 +51,28 @@ const assign = (node, ov) => { for (const k in ov) if (k !== 'guidPath') node[k]
 // Expands INSTANCE nodes into their component's children, applying
 // overrides (symbolOverrides) and Figma's pre-computed layout (derivedSymbolData).
 function buildTree(root, { byId, kids }) {
+  const PARENT = {};
+  for (const id in byId) for (const d of (byId[id].componentPropDefs || [])) if (d.parentPropDefId) PARENT[gid(d.id)] = gid(d.parentPropDefId);
+  // component properties (text / visibility / instance swap) referenced by nodes inside a component
+  const applyProps = (c, props) => {
+    if (!props || !props.size || !c.componentPropRefs) return c;
+    let cc = c;
+    for (const r of c.componentPropRefs) {
+      const rid = gid(r.defID); const v = props.get(rid) || (PARENT[rid] && props.get(PARENT[rid])); if (!v) continue;
+      if (cc === c) cc = clone(c);
+      const tv = v.textValue || v.textDataValue, sv = v.guidValue || (v.symbolIdValue && v.symbolIdValue.guid);
+      if (r.componentPropNodeField === 'TEXT_DATA' && tv && cc.textData) {
+        const ch = tv.characters;
+        if (ch !== cc.textData.characters) { cc.textData = { ...cc.textData, characters: ch, characterStyleIDs: [] }; if (cc.derivedTextData && (cc.derivedTextData.baselines || []).slice(-1)[0]?.endCharacter !== ch.length) delete cc.derivedTextData; }
+      } else if (r.componentPropNodeField === 'VISIBLE' && v.boolValue !== undefined) cc.visible = v.boolValue;
+      else if (r.componentPropNodeField === 'OVERRIDDEN_SYMBOL_ID' && sv && cc.symbolData) cc.symbolData = { ...cc.symbolData, symbolID: sv };
+    }
+    return cc;
+  };
   const walk = (n, ctx) => {
     if (n.type === 'INSTANCE' && n.symbolData) {
-      const sym = byId[gid(n.symbolData.symbolID)];
+      // an instance swap (override or component property) replaces the component this instance shows
+      const sym = byId[gid(n.overriddenSymbolID || n.symbolData.symbolID)];
       const ovs = new Map(), der = new Map();
       const pre = ctx.path.join('/');
       if (pre) {
@@ -63,13 +82,15 @@ function buildTree(root, { byId, kids }) {
       for (const ov of (n.symbolData.symbolOverrides || [])) { const k = ov.guidPath.guids.map(gid).join('/'); if (!ovs.has(k)) ovs.set(k, []); ovs.get(k).unshift(ov); }
       for (const ov of (n.derivedSymbolData || [])) { const k = ov.guidPath.guids.map(gid).join('/'); if (!der.has(k)) der.set(k, ov); }
       const scale = (ctx.scale || 1) * (n.symbolData.uniformScaleFactor || 1);
-      const children = sym ? (kids[gid(sym.guid)] || []).map(c => walkChild(c, { overrides: ovs, derived: der, path: [], scale })) : [];
+      const props = new Map(ctx.props || []);
+      for (const a of (n.componentPropAssignments || [])) { const v = (a.value && Object.keys(a.value).length ? a.value : null) || (a.varValue && a.varValue.value); if (v) { const id = gid(a.defID); props.set(id, v); if (PARENT[id]) props.set(PARENT[id], v); } }
+      const children = sym ? (kids[gid(sym.guid)] || []).map(c => walkChild(c, { overrides: ovs, derived: der, path: [], scale, props })) : [];
       return { node: n, children };
     }
     return { node: n, children: (kids[gid(n.guid)] || []).map(c => walkChild(c, ctx)) };
   };
   const walkChild = (c, ctx) => {
-    if (!ctx.overrides.size && !ctx.derived.size && (ctx.scale || 1) === 1) return walk(c, ctx);
+    if (!ctx.overrides.size && !ctx.derived.size && (ctx.scale || 1) === 1) return walk(applyProps(c, ctx.props), ctx);
     const p = [...ctx.path, gid(c.overrideKey || c.guid)];
     const key = p.join('/');
     let cc = c;
@@ -89,7 +110,7 @@ function buildTree(root, { byId, kids }) {
         cc.derivedTextData = { ...cc.derivedTextData, baselines: (cc.derivedTextData.baselines || []).map(b => ({ ...b, position: { x: b.position.x * sc, y: b.position.y * sc }, lineY: b.lineY * sc, lineHeight: b.lineHeight * sc, width: b.width * sc })), glyphs: (cc.derivedTextData.glyphs || []).map(g => ({ ...g, position: { x: g.position.x * sc, y: g.position.y * sc } })) };
       }
     }
-    return walk(cc, { ...ctx, path: p });
+    return walk(applyProps(cc, ctx.props), { ...ctx, path: p });
   };
   return walk(root, { overrides: new Map(), derived: new Map(), path: [], scale: 1 });
 }

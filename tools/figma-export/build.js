@@ -11,9 +11,13 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { load, index, buildTree, gid } = require('./fig');
 const partials = require('./partials');
+const { caseStudyEnd } = require('./case-study-end');
 
 const ROOT = path.resolve(__dirname, '../..');
-const FIG = process.argv[2] || path.join(ROOT, 'Portfolio from Figma.fig');
+const ARGS = process.argv.slice(2);
+const FIG = ARGS.find(a => !a.startsWith('--')) || path.join(ROOT, 'Portfolio from Figma.fig');
+// node build.js --only=lexafide  ->  export just that page (the other pages and assets are left alone)
+const ONLY = (ARGS.find(a => a.startsWith('--only=')) || '').slice(7);
 const OUT = {
   pages: path.join(ROOT, 'case-studies'),
   css: path.join(ROOT, 'assets/css/pages'),
@@ -26,6 +30,76 @@ const PAGES = [
   { id: '1:2024', slug: 'indian-bank', title: 'Legacy to Loyalty: Reimagining Indian Bank', description: 'Converting a legacy brand into a loyal one: a business-backed rebrand and redesign of Indian Bank\'s core payments journey.' },
   { id: '1:3343', slug: 'sthir', title: 'Sthir: An assistive writing device for the elderly', description: 'A writing product that enhances confidence, independence, and ease of use for elderly people with hand tremors.' },
   { id: '1:1159', slug: 'fermio', title: 'Fermio: A user-centred battery disposal service', description: 'Transforming battery disposal into a seamless, rewarded family ritual that can increase collection rates to 60%.' },
+  // Lexafide has its own Figma file. The canvas stops where the Comms Log chapter ends (`until`, in px of
+  // the frame); the rest of the page is hand-written HTML (`tail`) styled by `css`, followed by the close.
+  {
+    fig: path.join(ROOT, 'Lexafide from Figma.fig'), id: '6:651', slug: 'lexafide', until: 23108,
+    title: 'Lexafide: Designing for decisions, not automation',
+    description: 'Designing human–AI workflows for Lexafide, an AI call-handling platform for personal-injury law firms: onboarding, live calls, PIP, the Comms Log, Call Intelligence and multi-matter calls.',
+    tail: path.join(__dirname, 'lexafide-tail.html'), css: ['lexafide-tail.css'],
+    // text in the design that should link somewhere (the Figma file has the words but not the links)
+    links: {
+      'Open the full flow ↗': '../assets/img/lexafide/lx-flow-onboarding.webp',
+    },
+    // product-UI text in the mock-ups gets placeholder names (the story text keeps Tejas, Vasuman, Kaushal)
+    anonymise: true, anonymiseBelow: 12,
+    // testers are named by role only
+    textSwap: { 'Lizzy DePalma': 'Manager, Client Firm C' },
+    // one type system: Inter for all case-study text (Geist stays inside product UI, i.e. under 12px),
+    // sub-headings at 20/600, the big numbers at one size
+    typeFix: [
+      { family: 'Geist|Onest', minSize: 12, set: { family: 'Inter' } },
+      { size: 21, style: 'Bold|Medium', set: { size: 20, style: 'Semi Bold', color: '#0a0a0a' } },
+      { size: 21, style: 'Semi ?Bold', set: { size: 20 } },
+      // section titles: the second line is 45.2 Bold everywhere
+      { family: 'Inter', size: 45.2, style: 'Semi ?Bold', set: { style: 'Bold' } },
+      { family: 'Inter', size: 50.8, set: { size: 52, style: 'Bold' } },
+      { family: 'Inter', size: 53.9, set: { size: 52 } },
+      // the quote card's icon is a Font Awesome glyph; the site doesn't load that font, so use a real quote mark
+      { family: 'Font Awesome 6 Free', set: { family: 'Inter', style: 'Bold', size: 40, text: '\u201C' } },
+      { size: 14.1, style: 'SemiBold', set: { text: 'M' } }, // the quote avatar's initial, to match the placeholder
+      // headings (20px and up, semi bold or heavier) are set in Geist; body text stays Inter
+      { family: 'Inter', minSize: 20, style: 'Semi ?Bold|Bold|Extra ?Bold|Black', set: { family: 'Geist' } },
+    ],
+    // Comms Log search-bar mock-ups: in this file they are scaled-down component copies the exporter can't lay
+    // out, so they are drawn from renders of the same screens in the Lexafide design file (anonymised)
+    replace: {
+      '6:2173': '../assets/img/lexafide/lx-cl-s-default.webp',
+      '6:2345': '../assets/img/lexafide/lx-cl-s-scrolled.webp',
+      '6:2446': '../assets/img/lexafide/lx-cl-s-empty.webp',
+      '6:2467': '../assets/img/lexafide/lx-cl-s-filters.webp',
+      '6:2536': '../assets/img/lexafide/lx-cl-s-filters-closed.webp',
+      '6:2579': '../assets/img/lexafide/lx-cl-s-dates.webp',
+      '6:2624': '../assets/img/lexafide/lx-cl-s-loading.webp',
+      // LLM Mapping old/new: the pasted screenshots carry real names and numbers
+      '6:2662': '../assets/img/lexafide/lx-cl-llm.webp',
+      '6:2697': '../assets/img/lexafide/lx-cl-llm-old.webp',
+      // other pasted screenshots with real names, firms or numbers -> anonymised renders of the same screens
+      '6:690': '../assets/img/lexafide/lx-hero-workspace.webp', // hero workspace
+      '6:911': '../assets/img/lexafide/lx-hero-workspace.webp', // "The work" thumbnail
+      '6:692': '../assets/img/lexafide/lx-pip-call.webp', // hero PIP call (names blurred)
+      '6:863': '../assets/img/lexafide/lx-ob-p2-welcome.webp', // onboarding card (firm logo placeholder)
+      '6:879': '../assets/img/lexafide/lx-ac-guidance.webp',
+      '6:1484': '../assets/img/lexafide/lx-ac-guidance.webp',
+      '6:1496': '../assets/img/lexafide/lx-ac-handoff.webp',
+      '6:1504': '../assets/img/lexafide/lx-ac-settlement.webp',
+      '6:955': '../assets/img/lexafide/lx-mm-workspace.webp',
+      '6:939': '../assets/img/lexafide/lx-ci-generate-mm.webp',
+      '6:2148': '../assets/img/lexafide/lx-old-app.webp', // real screenshot of the old app (names and numbers blurred)
+      '6:2338': '../assets/img/lexafide/lx-old-app.webp',
+    },
+    // the PIP prototype goes in the space under "The experience, brought to life."
+    embeds: [{
+      // the PIP intro leaves its right half empty: show where the redesign is heading (screens not used elsewhere)
+      x: 720, y: 13600, w: 565, h: 330, after: 'realistically do now.', title: 'PIP redesign',
+      src: '',
+      fallback: `<figure class="lx-pipfig"><span class="lx-pipfig__row"><img src="../assets/img/lexafide/lx-pip-waiting.webp" alt="PIP redesign: a plain-language request in Command, with the AI working on it." width="750" height="1160" loading="lazy"><img src="../assets/img/lexafide/lx-pip-matter.webp" alt="PIP redesign: searching a matter lists everyone on it, ready to call." width="750" height="1160" loading="lazy"><img src="../assets/img/lexafide/lx-pip-forwarded.webp" alt="PIP redesign: a forwarded call arrives with its matter, stage and the previous call summary." width="750" height="1160" loading="lazy"></span><figcaption class="lx-pipfig__cap">Where PIP is heading: ask in plain language, find everyone on a matter, take a forwarded call with its context.</figcaption></figure>`,
+    }, {
+      x: 155, y: 18426, w: 1129, h: 640, after: 'The experience, brought to life.', title: 'PIP prototype',
+      src: '', // a published figma.site URL for the prototype goes here
+      fallback: `<a class="cs-embed-card" href="https://www.figma.com/make/CNaRnL0nTSuJmr7Ff7dYzK/Prototype-2?t=rSiRtQyKocyoHvVK-20&fullscreen=1" target="_blank" rel="noopener"><span class="cs-embed-card__text"><span class="cs-embed-card__k">Interactive prototype</span><span class="cs-embed-card__t">Try PIP: the chat and the dialer, working end to end.</span><span class="cs-embed-card__btn">Open the prototype ↗</span></span><span class="cs-embed-card__shots"><img src="../assets/img/lexafide/lx-pip-glance.webp" alt="" width="750" height="1160" loading="lazy"><img src="../assets/img/lexafide/lx-pip-incoming.webp" alt="" width="750" height="1160" loading="lazy"></span></a>`,
+    }],
+  },
 ];
 // Mobile layout: force a treatment for specific nodes ('figure' | 'scroll' | 'scroll-center' | 'flow' | 'skip' | 'descend' | 'solo'),
 // and `groups` to keep loose layers together ({ as: 'figure' | 'row', ids })
@@ -53,12 +127,21 @@ const MOBILE_OVERRIDES = {
     '1:1875': 'flow', // Hrithik: text, then the cut-out photo
     '1:1916': 'figure', // app screens collage
   },
+  lexafide: {
+    '6:653': 'skip', // hero background stripes: decoration that would otherwise stack as dozens of thin figures
+    '6:1754': 'scroll-center', // the 214 iterations band: cropped around its title on phones (lexafide-tail.css)
+  },
+};
+// Exported images blurred on the way out (output file -> blur sigma in output pixels): screenshots whose names or numbers must not be readable
+const BLUR_IMAGES = {
+  'screenshot-2026-06-30-at-5-52-30-pm-1-7813be.webp': 6.5, // Lexafide: the collage behind the 214 iterations band
 };
 // Figma frames -> site URLs (for prototype "navigate to" links)
 const FRAME_LINKS = { '1:3056': '../index.html', '1:2024': 'indian-bank.html', '1:3343': 'sthir.html', '1:1159': 'fermio.html' };
 // Shared chrome that is replaced by partials.js
 const HEADER_NAME = 'Div [framer-lnfr45]';
 const FOOTER_NAME = 'Div [framer-vAw4K]';
+const FOOTER_TUCK = 128; // must match the .canvas margin-bottom in assets/css/case-study.css
 // Vector icons exported for the hand-written home page
 const ICONS = {
   'id-card': '1:3073', 'linkedin-small': '1:3078', folder: '1:3086', 'task-alt': '1:3229',
@@ -249,6 +332,8 @@ class Exporter {
         else if (e.type === 'DROP_SHADOW') filt.push(`drop-shadow(${px(o.x)} ${px(o.y)} ${px((e.radius || 0) / 2)} ${c})`);
       } else if (e.type === 'FOREGROUND_BLUR' || e.type === 'LAYER_BLUR') filt.push(`blur(${px((e.radius || 0) / 2)})`);
       else if (e.type === 'BACKGROUND_BLUR') bf.push(`blur(${px((e.radius || 0) / 2)})`);
+      // Figma's Glass effect (refraction) has no CSS equivalent: approximate its bright refracted edge
+      else if (e.type === 'GLASS' && kind === 'box') sh.push('inset 1.5px 0 0 rgba(255,255,255,0.55)', 'inset -1px 0 0 rgba(255,255,255,0.18)');
     }
     let s = '';
     if (sh.length) s += `box-shadow:${sh.join(',')};`;
@@ -323,6 +408,8 @@ class Exporter {
     const W = n.size.x, H = n.size.y;
     const align = { LEFT: 'left', CENTER: 'center', RIGHT: 'right', JUSTIFIED: 'justify' }[n.textAlignHorizontal || 'LEFT'];
     let look = this.textLook(n, W, H) + `text-align:${align};` + this.effects(n, 'text') + this.common(n);
+    // Figma 'truncate text': one line cut off with an ellipsis
+    if (n.textTruncation === 'ENDING') look += 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     const cls = this.sheet.cls('t', look);
     const base = n.lineHeight;
     const nominal = base && base.units === 'PIXELS' ? base.value : base && base.units === 'RAW' ? base.value * n.fontSize : base && base.units === 'PERCENT' ? base.value / 100 * n.fontSize : n.fontSize * 1.21;
@@ -356,6 +443,7 @@ class Exporter {
     let bl = n.derivedTextData && n.derivedTextData.baselines;
     // Figma keeps stale layout data when an instance overrides the text; fall back to flowing text
     if (bl && bl.length && bl[bl.length - 1].endCharacter !== chars.length) bl = null;
+    if (n.textTruncation === 'ENDING') bl = null; // one line with an ellipsis, not Figma's line breaks
     let inner = '', pad = '';
     if (bl && bl.length) {
       const glyphs = (n.derivedTextData.glyphs || []);
@@ -400,7 +488,7 @@ class Exporter {
       });
     } else {
       inner = runs(0, chars.length).replace(/\n/g, '<br>');
-      pad = 'white-space:pre-wrap;';
+      pad = n.textTruncation === 'ENDING' ? 'white-space:nowrap;' : n.textAutoResize === 'WIDTH_AND_HEIGHT' ? 'white-space:pre;' : 'white-space:pre-wrap;'; // auto-width text never wraps
     }
     return `<${tag} class="${cls}" style="${g};${pad}">${inner}</${tag}>`;
   }
@@ -420,7 +508,8 @@ class Exporter {
     let gi = 0;
     const id = () => 'g' + gid(n.guid).replace(':', '_') + '_' + this.uid++ + '_' + (gi++);
     const fill = p => {
-      if (p.type === 'SOLID') return [rgba(p.color), r2((p.color.a ?? 1) * (p.opacity ?? 1))];
+      // the colour's alpha goes into fill-opacity only (putting it in both would square it)
+      if (p.type === 'SOLID') return [rgba({ ...p.color, a: 1 }), r2((p.color.a ?? 1) * (p.opacity ?? 1))];
       if (p.type.startsWith('GRADIENT')) {
         const t = p.transform || IDENT; const det = t.m00 * t.m11 - t.m01 * t.m10;
         const ix = (x, y) => { const X = x - t.m02, Y = y - t.m12; return [r2((t.m11 * X - t.m01 * Y) / det * W), r2((-t.m10 * X + t.m00 * Y) / det * H)]; };
@@ -450,7 +539,12 @@ class Exporter {
     add(n.fillGeometry, n.fillPaints);
     add(n.strokeGeometry, n.strokePaints, 'NONZERO');
     if (!paths.length) return '';
-    return `<svg class="v${cls ? ' ' + cls : ''}" style="${g}" width="${r2(W)}" height="${r2(H)}" viewBox="0 0 ${r2(W)} ${r2(H)}" aria-hidden="true">${defs.length ? '<defs>' + defs.join('') + '</defs>' : ''}${paths.join('')}</svg>`;
+    // straight lines have a zero-width or zero-height box, and browsers skip drawing an <svg> of zero size,
+    // so give that side 1px (1:1 viewBox, content keeps its coordinates and spills out via overflow:visible)
+    let vw = r2(W), vh = r2(H);
+    if (!vw) { vw = 1; g = g.replace(/(^|;)width:0(?=;|$)/, '$1width:1px'); }
+    if (!vh) { vh = 1; g = g.replace(/(^|;)height:0(?=;|$)/, '$1height:1px'); }
+    return `<svg class="v${cls ? ' ' + cls : ''}" style="${g}" width="${vw}" height="${vh}" viewBox="0 0 ${vw} ${vh}" aria-hidden="true">${defs.length ? '<defs>' + defs.join('') + '</defs>' : ''}${paths.join('')}</svg>`;
   }
 
   // ---- links from prototype interactions
@@ -482,12 +576,16 @@ class Exporter {
       let y = 0; for (const r of rows) { rowY[r] = y; y += h[r] || 0; }
     }
     let html = '';
+    // a connector's label box (role 2) only exists when the connector carries text; without it Figma
+    // still reports a default 100x100 box, which must not be painted over the page
+    const hasLabel = der.some(o => o.derivedTextData && (Object.assign({}, ng['40000000:' + role(o)] || {}, ng[P(o)] || {})).textData);
     if (n.type === 'TABLE') { const { bg } = this.background(n.fillPaints, n.size.x, n.size.y, n.name); html += `<div class="${this.sheet.cls('b', `background:${bg};${this.radius(n)}`)}" style="inset:0"></div>`; }
     for (const o of der) {
       const r = role(o), key = rest(o);
       const style = Object.assign({}, ng['40000000:' + r] || {}, ng[P(o)] || {});
       let x = o.transform ? o.transform.m02 : 0, y = o.transform ? o.transform.m12 : 0;
-      if (n.type === 'TABLE') { const row = gid(o.guidPath.guids[1]); if (r === 0) { y += rowY[row] || 0; cellPos[key] = [x, y]; } else { const c = cellPos[key] || [0, rowY[row] || 0]; x += c[0]; y += c[1]; } }
+      // cell transforms are already relative to the table, so the row offset only applies when a cell comes without one
+      if (n.type === 'TABLE') { const row = gid(o.guidPath.guids[1]); if (r === 0) { if (!o.transform) y += rowY[row] || 0; cellPos[key] = [x, y]; } else { const c = cellPos[key] || [0, rowY[row] || 0]; x += c[0]; y += c[1]; } }
       const node = Object.assign({ guid: { sessionID: 9, localID: this.uid++ }, name: n.name }, style, { size: o.size, transform: Object.assign({}, o.transform || IDENT, { m02: x, m12: y }), fillGeometry: o.fillGeometry, strokeGeometry: o.strokeGeometry });
       if (o.derivedTextData) {
         if (!style.textData) continue;
@@ -497,6 +595,7 @@ class Exporter {
         if (!node.lineHeight && o.derivedTextData.baselines && o.derivedTextData.baselines[0]) node.lineHeight = { units: 'PIXELS', value: o.derivedTextData.baselines[0].lineHeight };
         html += this.text(node, geom(node), 'p');
       } else {
+        if (n.type === 'CONNECTOR' && r === 2 && !hasLabel) continue;
         if (n.type === 'TABLE' && !node.strokePaints) node.strokePaints = [{ type: 'SOLID', color: { r: 0, g: 0, b: 0, a: 0.1 }, opacity: 1 }];
         if (r === 2 && !node.fillPaints) node.fillPaints = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1, a: 1 }, opacity: 1 }];
         if (!node.fillPaints) node.fillPaints = [];
@@ -510,6 +609,9 @@ class Exporter {
   node(tn, depth) {
     const n = tn.node;
     if (n.visible === false || n.type === 'SLICE') return '';
+    // a layer drawn as a supplied image instead (cfg.replace), e.g. a UI mock-up the exporter can't reproduce
+    const rep = this.replace && this.replace[gid(n.guid)];
+    if (rep) return `<img class="${this.sheet.cls('i', `object-fit:cover;object-position:top;${this.radius(n)}`)}" style="${geom(n)}" src="${rep}" alt="" loading="lazy" decoding="async">`;
     if (n.name === HEADER_NAME || n.name === FOOTER_NAME) return '';
     const g = geom(n);
     const W = n.size ? n.size.x : 0, H = n.size ? n.size.y : 0;
@@ -532,7 +634,9 @@ class Exporter {
     const fills = visible(n.fillPaints);
     const leaf = !tn.children.length;
     const [strokeDecl, strokePseudo] = this.stroke(n, W, H, true);
-    const fx = this.effects(n, 'box') + this.common(n) + this.radius(n);
+    // a group (or a frame with no fill) casts its shadow from its content, not its bounding box
+    const contentShadow = container && (n.type === 'GROUP' || !fills.length);
+    const fx = this.effects(n, contentShadow ? 'svg' : 'box') + this.common(n) + this.radius(n);
     // video
     const vid = fills.find(p => p.type === 'VIDEO' && p.video);
     if (vid && leaf) {
@@ -557,9 +661,17 @@ class Exporter {
     }
     // generic box
     const { bg, extra } = this.background(n.fillPaints, W, H, n.name);
+    // a layer whose only fill is blended (e.g. a soft-light image): blend the layer itself. Left on the inner
+    // fill div, the blend would be isolated by this element's own transform and mix with nothing.
+    let hoist = '';
+    const blended = fills.filter(p => !isNormal(p.blendMode));
+    if (!bg && extra.length === 1 && blended.length === 1 && isNormal(n.blendMode) && !tn.children.length) {
+      hoist = `mix-blend-mode:${blendCSS(blended[0].blendMode)};`;
+      extra[0] = extra[0].replace(/mix-blend-mode:[^;]+;/, '');
+    }
     // frames clip by default (the flag is omitted when false); groups never clip
     const clips = container && n.type !== 'GROUP' && n.frameMaskDisabled !== true && !(n.frameMaskDisabled === undefined && n.resizeToFit);
-    const cls = this.sheet.cls('b', `${bg ? `background:${bg};` : ''}${fx}${strokeDecl}${clips ? 'overflow:hidden;' : ''}`, strokePseudo);
+    const cls = this.sheet.cls('b', `${bg ? `background:${bg};` : ''}${fx}${hoist}${strokeDecl}${clips ? 'overflow:hidden;' : ''}`, strokePseudo);
     let inner = extra.map(e => `<div class="${this.sheet.cls('b', e + 'border-radius:inherit;')}" style="inset:0"></div>`).join('');
     const ch = tn.children;
     for (let i = 0; i < ch.length; i++) {
@@ -594,24 +706,73 @@ class Exporter {
   }
 
   // ---- page
+  // Per-page text fixes applied to the node tree before export:
+  //  typeFix   [{ family?, size?, style?, minSize?, set: { family?, size?, style?, color? } }] -> one type scale
+  //  anonymise  replace real names / contact details in product-UI text (under `anonymiseBelow` px, default 12)
+  retouch(tree, cfg) {
+    const R = cfg.anonymise ? require('./anonymise') : [];
+    const below = cfg.anonymiseBelow || 12;
+    const hexToColor = h => ({ r: parseInt(h.slice(1, 3), 16) / 255, g: parseInt(h.slice(3, 5), 16) / 255, b: parseInt(h.slice(5, 7), 16) / 255, a: 1 });
+    const matches = (fn, size, w) => (!w.family || (fn && new RegExp(`^(${w.family})$`).test(fn.family))) && (w.size == null || Math.abs(size - w.size) < 0.25) && (w.minSize == null || size >= w.minSize) && (!w.style || (fn && new RegExp(`^(${w.style})$`, 'i').test(fn.style)));
+    const apply = (obj, size, set) => {
+      if (set.family && obj.fontName) obj.fontName = { ...obj.fontName, family: set.family };
+      if (set.style && obj.fontName) obj.fontName = { ...obj.fontName, style: set.style };
+      if (set.size && obj.fontSize) obj.fontSize = set.size;
+      if (set.color) obj.fillPaints = [{ type: 'SOLID', visible: true, opacity: 1, blendMode: 'NORMAL', color: hexToColor(set.color) }];
+      if (set.text != null && obj.textData) { obj.textData = { ...obj.textData, characters: set.text, characterStyleIDs: [] }; delete obj.derivedTextData; }
+    };
+    const walk = tn => {
+      const n = tn.node;
+      if (n.type === 'TEXT' && n.textData) {
+        for (const rule of (cfg.typeFix || [])) {
+          if (matches(n.fontName, n.fontSize, rule)) apply(n, n.fontSize, rule.set);
+          for (const st of (n.textData.styleOverrideTable || [])) if ((st.fontName || st.fontSize) && matches(st.fontName || n.fontName, st.fontSize || n.fontSize, rule)) apply(st, st.fontSize || n.fontSize, rule.set); // overrides without a font inherit the node's
+        }
+        for (const [from, to] of Object.entries(cfg.textSwap || {})) {
+          const t = n.textData.characters;
+          if (t.includes(from)) { n.textData = { ...n.textData, characters: t.split(from).join(to), characterStyleIDs: [] }; delete n.derivedTextData; }
+        }
+        if (R.length && n.fontSize < below) {
+          let t = n.textData.characters; const before = t;
+          for (const [re, to] of R) t = t.replace(re, to);
+          if (t !== before) { n.textData = { ...n.textData, characters: t, characterStyleIDs: [] }; delete n.derivedTextData; }
+        }
+      }
+      tn.children.forEach(walk);
+    };
+    walk(tree);
+  }
+
   page(cfg) {
     this.sheet = new Sheet(); this.fonts = new Map(); this.h1Done = false; this.uid = 0; this.prefix = '../';
     const root = this.idx.byId[cfg.id];
     const tree = buildTree(root, this.idx);
+    if (cfg.typeFix || cfg.anonymise) this.retouch(tree, cfg);
+    this.replace = cfg.replace || null;
     // the page frame usually wraps a single full-size frame; unwrap it
     let top = tree;
     while (top.children.length === 1 && top.children[0].node.size && Math.abs(top.children[0].node.size.y - root.size.y) < 1 && ['FRAME'].includes(top.children[0].node.type)) top = top.children[0];
     // canvas ends where the footer starts
     let height = root.size.y;
+    const tailHTML = cfg.tail && fs.existsSync(cfg.tail) ? fs.readFileSync(cfg.tail, 'utf8') : '';
     const findFooter = (tn, y) => { for (const c of tn.children) { const cy = y + ((c.node.transform || IDENT).m12); if (c.node.name === FOOTER_NAME && c.node.visible !== false) return cy; const r = findFooter(c, cy); if (r != null) return r; } return null; };
     const fy = findFooter(top, 0);
     // footer is wrapped in a frame directly under the page; drop the wrapper too
-    const bodyKids = top.children.filter(c => !(fy != null && Math.abs((c.node.transform || IDENT).m12 - fy) < 1 && c.node.size.y <= 300));
-    if (fy != null) height = fy;
+    let bodyKids = top.children.filter(c => !(fy != null && Math.abs((c.node.transform || IDENT).m12 - fy) < 1 && c.node.size.y <= 300));
+    // keep FOOTER_TUCK px past the footer's top: in Figma the footer overlaps the page, so its rounded
+    // corners show the content behind them. case-study.css pulls this strip back under the footer.
+    if (fy != null) height = fy + FOOTER_TUCK;
+    // canvas cut short: hand-written sections follow it, so nothing is tucked under the footer
+    if (cfg.until) { bodyKids = bodyKids.filter(c => (c.node.transform || IDENT).m12 < cfg.until); height = cfg.until; }
     const rootBg = this.background(top.node.fillPaints, 1440, height, top.node.name).bg || '#fff';
     const body = bodyKids.map(c => this.node(c, 1)).join('');
     this.mH1 = false;
     const mobile = this.mobilePage({ node: top.node, children: bodyKids }, MOBILE_OVERRIDES[cfg.slug]);
+    // the shared header and footer (partials.js, styled by site.css) use these, as on the home page
+    for (const [f, ws] of [['Raleway', [500, 600, 700]], ['Inter', [400, 500, 600]]]) {
+      if (!this.fonts.has(f)) this.fonts.set(f, new Set());
+      ws.forEach(w => this.fonts.get(f).add(String(w)));
+    }
     const fontsURL = googleFonts(this.fonts);
     const html = `<!doctype html>
 <html lang="en">
@@ -626,7 +787,8 @@ class Exporter {
 <link rel="stylesheet" href="${fontsURL}">
 <link rel="stylesheet" href="../assets/css/site.css">
 <link rel="stylesheet" href="../assets/css/case-study.css">
-<link rel="stylesheet" href="../assets/css/pages/${cfg.slug}.css">
+<link rel="stylesheet" href="../assets/css/pages/${cfg.slug}.css">${(cfg.css || []).map(c => `
+<link rel="stylesheet" href="../assets/css/pages/${c}">`).join('')}
 <script src="../assets/js/main.js" defer></script>
 </head>
 <body class="case-study">
@@ -634,18 +796,39 @@ ${partials.header({ base: '../index.html' })}
 <!-- Generated from Figma by tools/figma-export/build.js. Re-run the script instead of editing layout by hand. -->
 <main>
 <div class="canvas-wrap">
-<div class="canvas" style="height:${px(height)};background:${rootBg}" data-width="1440">
+<div class="canvas" style="height:${px(height)};background:${rootBg}${cfg.until ? ';margin-bottom:0' : ''}" data-width="1440">
 ${body}
 </div>
 </div>
 <!-- Mobile layout (reflowed from the same Figma frames, see tools/figma-export/mobile.js) -->
 ${mobile}
+${tailHTML}
+${caseStudyEnd(cfg.slug)}
 </main>
 ${partials.footer({ base: '../index.html' })}
 </body>
 </html>
 `;
-    fs.writeFileSync(path.join(OUT.pages, cfg.slug + '.html'), html);
+    // turn design text into links where the Figma file lost them (desktop canvas and mobile layout)
+    let out = html;
+    // live embeds (e.g. a Figma prototype) placed into space the design leaves for them
+    for (const em of (cfg.embeds || [])) {
+      // `src` must allow framing (a published *.figma.site does; figma.com/make editor links do not);
+      // without one, `fallback` (a link card) takes its place
+      const frame = em.src ? `<iframe class="cs-embed" src="${esc(em.src)}" title="${esc(em.title)}" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe>` : em.fallback;
+      const box = `<div class="cs-embed-box" style="left:${px(em.x)};top:${px(em.y)};width:${px(em.w)};height:${px(em.h)}">${frame}</div>`;
+      const close = out.indexOf('\n</div>\n</div>\n<!-- Mobile layout');
+      if (close > 0) out = out.slice(0, close) + `\n${box}` + out.slice(close);
+      const at = out.indexOf(esc(em.after), out.indexOf('class="m-page"'));
+      if (at > 0) {
+        const next = out.indexOf('<div class="m-block"', at);
+        const end = out.indexOf('</section>', at);
+        const pos = next > 0 && next < end ? next : end;
+        out = out.slice(0, pos) + `<div class="m-block cs-embed-m" style="margin-top:16px">${frame}</div>\n` + out.slice(pos);
+      }
+    }
+    for (const [text, href] of Object.entries(cfg.links || {})) out = out.split(esc(text)).join(`<a href="${href}" target="_blank" rel="noopener">${esc(text)}</a>`);
+    fs.writeFileSync(path.join(OUT.pages, cfg.slug + '.html'), out);
     fs.writeFileSync(path.join(OUT.css, cfg.slug + '.css'), `/* Generated from Figma: ${cfg.title} */\n` + this.sheet.toString());
     console.log(`page ${cfg.slug}: ${(html.length / 1024).toFixed(0)} KB html, ${this.sheet.rules.length} css rules`);
   }
@@ -670,7 +853,25 @@ ${partials.footer({ base: '../index.html' })}
   }
 
   // ---- write optimised assets
-  assets() {
+  // resize + convert one image to WebP: ImageMagick if present, otherwise sharp (npm i sharp)
+  async convert(srcFile, out, target, crop, blur) {
+    try {
+      const args = [srcFile, '-auto-orient'];
+      if (crop) { const [w, h] = execFileSync('magick', ['identify', '-format', '%w %h', srcFile]).toString().split(' ').map(Number); const [x, y, cw, ch] = crop; args.push('-crop', `${Math.round(cw * w)}x${Math.round(ch * h)}+${Math.round(x * w)}+${Math.round(y * h)}`, '+repage'); }
+      execFileSync('magick', [...args, '-resize', `${target}x>`, ...(blur ? ['-blur', `0x${blur}`] : []), '-quality', '80', '-define', 'webp:method=6', out]);
+      return true;
+    } catch (e) {
+      let sharp; try { sharp = require('sharp'); } catch { console.warn('image failed (no ImageMagick or sharp)', srcFile); return false; }
+      let img = sharp(srcFile).rotate();
+      if (crop) { const m = await sharp(srcFile).metadata(); const [x, y, cw, ch] = crop; img = img.extract({ left: Math.round(x * m.width), top: Math.round(y * m.height), width: Math.round(cw * m.width), height: Math.round(ch * m.height) }); }
+      img = img.resize({ width: target, withoutEnlargement: true });
+      if (blur) img = sharp(await img.toBuffer()).blur(blur);
+      await img.webp({ quality: 80, effort: 6 }).toFile(out);
+      return true;
+    }
+  }
+
+  async assets() {
     const src = path.join(this.fig.dir, 'images');
     for (const [hash, o] of Object.entries(HOME_IMAGES)) this.images.set('home:' + hash, { hash, file: o.name + '.webp', w: o.w / 2, iw: 99999, crop: o.crop });
     let n = 0;
@@ -678,20 +879,13 @@ ${partials.footer({ base: '../index.html' })}
       const out = path.join(OUT.img, rec.file);
       if (fs.existsSync(out)) continue;
       const target = Math.min(rec.iw || 99999, Math.ceil(rec.w * 2 / 10) * 10 || 1600, 2880);
-      let crop = [];
-      if (rec.crop) {
-        const [w, h] = execFileSync('magick', ['identify', '-format', '%w %h', path.join(src, rec.hash)]).toString().split(' ').map(Number);
-        const [x, y, cw, ch] = rec.crop;
-        crop = ['-crop', `${Math.round(cw * w)}x${Math.round(ch * h)}+${Math.round(x * w)}+${Math.round(y * h)}`, '+repage'];
-      }
-      const args = [path.join(src, rec.hash), '-auto-orient', ...crop, '-resize', `${target}x>`, '-quality', '80', '-define', 'webp:method=6', out];
-      try { execFileSync('magick', args); n++; } catch (e) { console.warn('image failed', rec.hash, e.message); }
+      if (await this.convert(path.join(src, rec.hash), out, target, rec.crop, BLUR_IMAGES[rec.file])) n++;
     }
     for (const rec of this.videos.values()) {
       const out = path.join(OUT.video, rec.file);
       if (fs.existsSync(out)) continue;
       const w = Math.min(1440, Math.ceil(rec.w * 1.25 / 2) * 2);
-      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', path.join(this.fig.dir, 'videos', rec.hash), '-map', '0:v:0', '-an', '-vf', `scale=${w}:-2`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', out]);
+      execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', path.join(this.fig.dir, 'videos', rec.hash), '-map', '0:v:0', '-map', '0:a:0?', '-vf', `scale=${w}:-2`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '30', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', out]);
       n++;
     }
     console.log(`assets: ${n} files written (${this.images.size} images, ${this.videos.size} videos referenced)`);
@@ -711,12 +905,20 @@ function googleFonts(fonts) {
 require('./mobile')(Exporter, { r2, px, esc, rgba, visible, IDENT, gid, fontInfo, HEADER_NAME, FOOTER_NAME });
 
 // ---------------------------------------------------------------------- run
-Object.values(OUT).forEach(d => fs.mkdirSync(d, { recursive: true }));
-const fig = load(FIG);
-const ex = new Exporter(fig);
-ex.icons();
-for (const p of PAGES) ex.page(p);
-const home = path.join(ROOT, 'index.html');
-if (fs.existsSync(home)) partials.inject(home, { header: partials.header(), footer: partials.footer() });
-ex.assets();
-fs.rmSync(fig.dir, { recursive: true, force: true });
+(async () => {
+  Object.values(OUT).forEach(d => fs.mkdirSync(d, { recursive: true }));
+  const pages = PAGES.filter(p => !ONLY || p.slug === ONLY);
+  const byFile = new Map();
+  for (const p of pages) { const f = p.fig || FIG; if (!byFile.has(f)) byFile.set(f, []); byFile.get(f).push(p); }
+  for (const [file, list] of byFile) {
+    if (!fs.existsSync(file)) { console.warn(`skipped ${list.map(p => p.slug).join(', ')}: ${path.basename(file)} not found`); continue; }
+    const fig = load(file);
+    const ex = new Exporter(fig);
+    if (file === FIG && !ONLY) ex.icons();
+    for (const p of list) ex.page(p);
+    await ex.assets();
+    fs.rmSync(fig.dir, { recursive: true, force: true });
+  }
+  const home = path.join(ROOT, 'index.html');
+  if (!ONLY && fs.existsSync(home)) partials.inject(home, { header: partials.header(), footer: partials.footer() });
+})();

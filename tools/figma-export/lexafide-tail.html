@@ -1,0 +1,180 @@
+<!-- Hand-written end of the Lexafide case study (build.js appends it after the Figma canvas, which stops
+     where the Comms Log chapter ends). Styles: assets/css/pages/lexafide-tail.css -->
+<div class="lx">
+<!-- ============================== INTERLUDE ============================== -->
+<section class="lx-sec" aria-labelledby="lx-after">
+  <div class="lx-wrap">
+    <p class="lx-eyebrow" style="justify-content:center">Internship → part-time</p>
+    <h2 class="lx-tier lx-tier--center" id="lx-after"><span class="lx-tier__a">The Figma file</span><span class="lx-tier__b">wasn't the <em>finish line.</em></span></h2>
+    <p class="lx-p" style="margin:28px auto 0;text-align:center">From August to November I continued part-time, much closer to engineering. The loop changed from "design, then hand over" to this:</p>
+    <div class="lx-loop" style="margin-top:36px"><span>Design</span><i>→</i><span>Engineering review</span><i>→</i><span class="is-key">Constraint</span><i>→</i><span>Adjust</span><i>→</i><span>Build</span><i>→</i><span class="is-key">Compare with the design</span><i>→</i><span>Refine</span></div>
+
+    <div class="lx-beat lx-split lx-split--mid">
+      <div>
+        <h3 class="lx-h3">Show it before it feels finished</h3>
+        <p class="lx-p" style="margin-top:16px">During the internship I let designs sit until they felt resolved before showing the front-end engineer, which meant fewer, later feedback loops. One of the founders reframed it as hesitation: a good organisation is one where people are always open to conversations.</p>
+        <p class="lx-p">I also underestimated how long it takes to make a design and its components development-ready. Now every screen goes over with its states.</p>
+      </div>
+      <figure class="lx-fig">
+        <div class="lx-scroll"><img src="../assets/img/lexafide/lx-cl-states.webp" alt="Conversation list handed over in every state: default, chips, scrolled, no results, filter modal, filters, dates, loading." width="3647" height="666" loading="lazy" style="width:max(100%, 1400px)"></div>
+        <figcaption class="lx-cap">One list, handed over in every state: default, scrolled, no results, filters, dates and loading.</figcaption>
+      </figure>
+    </div>
+
+    <div class="lx-beat">
+      <div class="lx-head"><h3 class="lx-h3">Design and what was built</h3><p class="lx-p" style="margin-top:12px">Where the build differed from the design, I followed up on spacing, states, hierarchy and behaviour.</p></div>
+      <div class="lx-pair lx-pair--db">
+        <figure class="lx-fig"><p class="lx-pair__k">Designed</p><img class="lx-shot" src="../assets/img/lexafide/lx-ci-design-versions.webp" alt="Designed Call Intelligence report with the version history open: each version labelled by call type, template, model and author." width="2250" height="1583" loading="lazy"></figure>
+        <figure class="lx-fig"><p class="lx-pair__k">Deployed</p><img class="lx-shot" src="../assets/img/lexafide/lx-ci-built-report.webp" alt="Deployed Call Intelligence report open beside a conversation, with version history, feedback and re-run in the toolbar and the report in a PDF viewer." width="2000" height="913" loading="lazy"></figure>
+      </div>
+      <p class="lx-cap">Call Intelligence report and version history. In the build, versions are listed by prompt name. Names and numbers in the deployed screenshot are blurred.</p>
+    </div>
+
+    <div class="lx-beat lx-split lx-split--mid">
+      <figure class="lx-fig">
+        <img class="lx-shot" src="../assets/img/lexafide/lx-team-review.webp" alt="A late-night design review on a video call with Kaushal, Tejas and Vasuman." width="963" height="430" loading="lazy">
+        <figcaption class="lx-cap">A design review with Kaushal, Tejas and Vasuman, 30 June 2026.</figcaption>
+      </figure>
+      <div>
+        <p class="lx-aside"><strong class="lx-aside__t">The internship ended. The hoodie stayed. So did the work.</strong><span>Lexafide merch, and a part-time role after the internship.</span></p>
+        <div class="lx-ph" role="img" aria-label="Placeholder for a photo of the Lexafide hoodie and t-shirt" style="margin-top:24px;min-height:180px"><b>Photo to come</b>Lexafide hoodie and t-shirt</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 05 CALL INTELLIGENCE ============================== -->
+<section class="lx-sec lx-sec--grey" id="ch-ci" aria-labelledby="lx-ci">
+  <div class="lx-wrap">
+    <div class="lx-chap">
+      <div>
+        <p class="lx-eyebrow"><span class="lx-eyebrow__num">05</span>Call Intelligence</p>
+        <h2 class="lx-chap__title" id="lx-ci">Letting the firm decide <em>what the AI writes.</em></h2>
+      </div>
+      <div class="lx-badges"><span class="lx-badge lx-badge--own">Owned</span><span class="lx-badge lx-badge--live">Deployed</span></div>
+    </div>
+
+    <div class="lx-split">
+      <p class="lx-lead">Call Intelligence turns a call into a structured report for the team that needs it. The question shifted from "how can AI assist the user?" to "how can the user direct what the AI produces?"</p>
+      <div>
+        <p class="lx-q"><i class="lx-dia" aria-hidden="true"></i><span>How might legal teams control AI-written call reports without being exposed to the technical complexity underneath?</span></p>
+        <div class="lx-chips" style="margin-top:24px" aria-label="The six flows designed"><span><b>01</b>System overview</span><span><b>02</b>Admin config, multi-template</span><span><b>03</b>Automation builder</span><span><b>04</b>Automated delivery</span><span><b>05</b>Manual run</span><span><b>06</b>Report preview</span></div>
+      </div>
+    </div>
+
+    <div class="lx-beat lx-grid-2" style="gap:clamp(32px,4vw,56px);align-items:start">
+      <div>
+        <figure class="lx-fig"><img class="lx-shot" src="../assets/img/lexafide/lx-ci-generate.webp" alt="Generate intelligence report dialog: call type MVA Intake marked as suggested, two report templates, estimated time." width="2129" height="1583" loading="lazy"></figure>
+        <h3 class="lx-h3" style="margin-top:28px">The AI suggests. The person picks.</h3>
+        <ul class="lx-list" style="margin-top:14px">
+          <li class="lx-li"><strong>A suggested call type</strong>, which the person can change. The report templates update to match.</li>
+          <li class="lx-li"><strong>A template for the audience:</strong> a concise intake summary, or a detailed report for attorneys.</li>
+          <li class="lx-li"><strong>An honest wait:</strong> an estimated time before anything runs.</li>
+        </ul>
+      </div>
+      <div>
+        <figure class="lx-fig"><img class="lx-shot" src="../assets/img/lexafide/lx-ci-feedback.webp" alt="Report view with the feedback dialog: how accurate was this report, accurate, partially accurate or inaccurate, and what was right or wrong." width="2250" height="1583" loading="lazy"></figure>
+        <h3 class="lx-h3" style="margin-top:28px">Every report says what it is</h3>
+        <ul class="lx-list" style="margin-top:14px">
+          <li class="lx-li"><strong>Visible provenance:</strong> call type, template, model and prompt version on every report.</li>
+          <li class="lx-li"><strong>A stated limit:</strong> "This analysis assists — it does not replace — professional review."</li>
+          <li class="lx-li"><strong>Feedback with a destination:</strong> accuracy ratings go to the prompt owner, tied to the exact template and prompt version. Version history and re-run keep a bad report from being lost.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lx-beat lx-split lx-split--mid">
+      <div>
+        <h3 class="lx-h3">Failure is designed in</h3>
+        <p class="lx-p" style="margin-top:16px">Automations that matched a call ("MVA Intake → Intake Team"), reports that are ready, generations that failed, model timeouts with a retry, and a provider slowing down: each is a state in the notification system, not a surprise.</p>
+      </div>
+      <figure class="lx-fig"><img class="lx-shot" src="../assets/img/lexafide/lx-ci-notif.webp" alt="Notifications panel: report ready, automation matched a call, report generation failed with retry, model provider degraded." width="2250" height="1583" loading="lazy"></figure>
+    </div>
+
+    <div class="lx-beat">
+      <div class="lx-pair lx-pair--db">
+        <figure class="lx-fig"><p class="lx-pair__k">Designed</p><img class="lx-shot" src="../assets/img/lexafide/lx-ci-design-notif.webp" alt="Designed notifications page: report ready, automation matched a call, report generation failed and model provider degraded, each with its source." width="2250" height="1583" loading="lazy"></figure>
+        <figure class="lx-fig"><p class="lx-pair__k">Deployed</p><img class="lx-shot" src="../assets/img/lexafide/lx-ci-built-notif.webp" alt="Deployed notifications page with All and Unread tabs, Mark all read, and report-ready notifications." width="2000" height="904" loading="lazy"></figure>
+      </div>
+      <p class="lx-cap">The notification system, designed and deployed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== 06 MULTI-MATTER ============================== -->
+<section class="lx-sec" id="ch-mm" aria-labelledby="lx-mm">
+  <div class="lx-wrap">
+    <div class="lx-chap">
+      <div>
+        <p class="lx-eyebrow"><span class="lx-eyebrow__num">06</span>Multi-matter calls</p>
+        <h2 class="lx-chap__title" id="lx-mm">When one call stops meaning <em>one case.</em></h2>
+      </div>
+      <div class="lx-badges"><span class="lx-badge lx-badge--own">Owned, solo</span><span class="lx-badge lx-badge--dev">In development</span></div>
+    </div>
+
+    <div class="lx-split">
+      <div>
+        <p class="lx-lead">The first mental model was simple: one call, one matter. Real calls aren't like that.</p>
+        <p class="lx-p" style="margin-top:16px">One conversation can cover several matters, or start a new intake. It's the edge case from Active Call and the "9 matching records" from the Comms Log, finally treated as the normal case.</p>
+      </div>
+      <p class="lx-q"><i class="lx-dia" aria-hidden="true"></i><span>What is the object the interface is really representing, when a call's legal context isn't singular?</span></p>
+    </div>
+
+    <div class="lx-beat">
+      <p class="lx-was">Before: <s>1 call → 1 matter</s></p>
+      <div class="lx-mm" style="margin-top:20px" role="img" aria-label="One call is linked to matter A, matter B and a new intake. Each record is reviewed, then the call is logged in Litify.">
+        <div class="lx-mm__call">1 call<small>transcript + summary</small></div>
+        <span class="lx-mm__arrow" aria-hidden="true">→</span>
+        <div class="lx-mm__list"><span>Matter A <small>existing</small></span><span>Matter B <small>existing</small></span><span class="is-new">New intake <small>created from the call</small></span></div>
+        <span class="lx-mm__arrow" aria-hidden="true">→</span>
+        <div class="lx-mm__end"><i class="lx-dia lx-dia--fill" aria-hidden="true"></i>Review each record, then log to Litify</div>
+      </div>
+    </div>
+
+    <div class="lx-beat lx-ann">
+      <figure class="lx-fig"><img class="lx-shot" src="../assets/img/lexafide/lx-mm-final.webp" alt="Multi-matter logging: the conversation with its summary next to log-call dialogs for two matters and an intake." width="2349" height="1970" loading="lazy"></figure>
+      <div>
+        <h3 class="lx-h3">One record at a time, nothing left behind</h3>
+        <ol style="margin-top:24px">
+          <li><span><b>A multi-matter switch</b> in the log-call dialog, with a count: "3 matters + 1 intake discussed".</span></li>
+          <li><span><b>Add a matter or an intake</b> the call touched but the system didn't catch.</span></li>
+          <li><span><b>Record 1 of 2</b>, each with its own parties, summary and logging options.</span></li>
+          <li><span><b>"0 of 2 records logged"</b>, so it's obvious when something hasn't been saved.</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== OUTCOMES ============================== -->
+<section class="lx-sec lx-sec--outcomes" aria-labelledby="lx-out">
+  <div class="lx-wrap">
+    <p class="lx-eyebrow">Outcomes</p>
+    <h2 class="lx-h2" id="lx-out">What changed</h2>
+    <div class="lx-out" style="margin-top:40px">
+      <div class="lx-out__col"><p class="lx-out__k">Deployed</p><ul><li><b>Call Intelligence</b>, with templates, feedback and version history</li><li><b>The notification system</b></li><li><b>The new Comms Log navigation</b></li></ul></div>
+      <div class="lx-out__col"><p class="lx-out__k">Validated and adopted</p><ul><li><b>The card-based onboarding</b>, chosen after testing with two client-firm managers</li><li><b>A fixed scope for the AI voicemail agent</b>: gather data, talk to the caller, generate leads, never advise</li></ul></div>
+      <div class="lx-out__col"><p class="lx-out__k">In development</p><ul><li><b>PIP</b>, scoped to the Tier 1 MVP</li><li><b>The Comms Log redesign</b> and LLM mapping</li><li><b>Multi-matter logging</b></li></ul></div>
+    </div>
+
+    <div style="margin-top:96px">
+      <h3 class="lx-h3">Where each surface puts the person</h3>
+      <p class="lx-p" style="margin-top:12px">The same spectrum from the turn, with every surface placed on it. Circles are the AI's part; diamonds are where a person decides.</p>
+      <div style="margin-top:32px;overflow-x:auto">
+        <ul class="lx-plot lx-plot__head" aria-hidden="true"><li><span></span><span class="lx-plot__c">AI acts</span><span class="lx-plot__c">AI suggests</span><span class="lx-plot__c">Reviews</span><span class="lx-plot__c">Edits</span><span class="lx-plot__c">Decides</span></li></ul>
+        <ul class="lx-plot">
+          <li><span class="lx-plot__n">Voicemail agent</span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c"></span><span class="lx-plot__c"></span><span class="lx-plot__c"></span><span class="lx-plot__c is-on"></span></li>
+          <li><span class="lx-plot__n">Onboarding</span><span class="lx-plot__c"></span><span class="lx-plot__c"></span><span class="lx-plot__c"></span><span class="lx-plot__c is-span"></span><span class="lx-plot__c is-on"></span></li>
+          <li><span class="lx-plot__n">Active Call</span><span class="lx-plot__c"></span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c"></span><span class="lx-plot__c is-on"></span></li>
+          <li><span class="lx-plot__n">PIP</span><span class="lx-plot__c"></span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c"></span><span class="lx-plot__c"></span></li>
+          <li><span class="lx-plot__n">LLM mapping</span><span class="lx-plot__c"></span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c is-on"></span></li>
+          <li><span class="lx-plot__n">Call Intelligence</span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c is-ai"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c"></span><span class="lx-plot__c"></span></li>
+          <li><span class="lx-plot__n">Multi-matter</span><span class="lx-plot__c"></span><span class="lx-plot__c"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c is-on"></span><span class="lx-plot__c is-on"></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="lx-tier lx-tier--center" style="margin-top:120px"><span class="lx-tier__a">The goal was never to automate every decision.</span><span class="lx-tier__b">It was to make the right decisions easier for the <em>right person</em> to make.</span></h2>
+  </div>
+</section>
+</div>

@@ -105,7 +105,7 @@
 .t43{font-family:'Inter', sans-serif;font-weight:800;font-size:32px;line-height:0.8;letter-spacing:-0.01em;color:#cff434;text-align:center;}
 .t44{font-family:'Inter', sans-serif;font-weight:500;font-size:16px;line-height:1.5;letter-spacing:0.01em;color:#000000;text-align:left;}
 .t45{font-family:'Inter', sans-serif;font-weight:500;font-size:16px;line-height:1;letter-spacing:0;color:#024653;text-align:left;}
-.b29{background:rgba(0,0,0,0.1);border-radius:11.2px;}
+.b29{background:#ffffff;border-radius:11.2px;}
 .t46{font-family:'Inter', sans-serif;font-weight:400;font-size:8px;line-height:12px;color:#000000;text-align:left;}
 .t47{font-family:'Inter', sans-serif;font-weight:700;font-size:8px;line-height:12px;color:#000000;text-align:left;}
 .t48{font-family:'Inter', sans-serif;font-weight:700;font-size:7.46px;line-height:1.5;letter-spacing:-0.01em;color:#1e1e1e;text-align:left;}
@@ -205,3 +205,7 @@
 .mt31{font-family:'Inter', sans-serif;font-weight:600;letter-spacing:-0.01em;color:#cff434;font-size:20.4px;line-height:1.1;text-align:left;}
 .mt32{font-family:'Inter', sans-serif;font-weight:600;letter-spacing:-0.01em;color:rgba(234,244,245,0.8);font-size:20.4px;line-height:1.1;text-align:left;}
 .mt33{font-family:'Inter', sans-serif;font-weight:600;letter-spacing:-0.01em;color:#cff434;font-size:35.8px;line-height:1.1;text-align:left;}
+
+/* ---- User Journey Map: the full 6,000px map scrolls sideways inside the page ---- */
+.canvas .ujm-scroll{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#c4c4c4 transparent;}
+.canvas .ujm-scroll:focus-visible{outline:2px solid #07513f;outline-offset:4px;}

@@ -6,18 +6,22 @@
    Per-page look (colours, fonts, images) lives in css/pages/<page>.css.
    ========================================================================== */
 
-body.case-study { --header-h: 100px; }
+body.case-study { --header-h: 70px; }
+@media (max-width: 760px) { body.case-study { --header-h: 60px; } }
 
 .canvas-wrap {
-  overflow: hidden;
+  overflow-x: clip;
 }
+/* The canvas runs 128px past the footer's top edge (FOOTER_TUCK in build.js). The negative margin
+   tucks that strip under the footer, so the footer's rounded corners show the page behind them as in Figma. */
 .canvas {
   position: relative;
   width: 1440px;
-  margin: 0 auto;
+  margin: 0 auto -128px;
   overflow: hidden;
   zoom: var(--canvas-zoom, 1);
 }
+body.case-study .site-footer { position: relative; z-index: 1; background: transparent; }
 
 :is(.canvas, .m-fig__canvas) :where(section, div, a, img, video, svg, p, h1, h2, h3) {
   position: absolute;
@@ -104,4 +108,85 @@ video.m-img { background: #000; }
   margin-top: 6px;
   font: 400 12px/1.4 var(--font-sans);
   color: #8a8a8a;
+}
+
+/* Videos: poster + play button; the video loads and plays only when clicked (main.js) */
+.video-wrap { position: relative; display: block; }
+.video-play {
+  display: flex; align-items: center; justify-content: center;
+  margin: 0; padding: 0; border: 0; cursor: pointer;
+  background: rgba(0, 0, 0, 0.12);
+  color: #111;
+}
+.video-wrap > .video-play { position: absolute; inset: 0; }
+.video-play--abs { position: absolute; box-sizing: border-box; }
+.video-play[hidden] { display: none; }
+.video-play__icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 72px; height: 72px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.video-play__icon svg { width: 30px; height: 30px; margin-left: 4px; }
+.video-play:hover .video-play__icon { transform: scale(1.06); background: #fff; }
+.video-play:focus-visible { outline: 3px solid #fff; outline-offset: -6px; }
+@media (max-width: 1023px) { .video-play__icon { width: 56px; height: 56px; } .video-play__icon svg { width: 24px; height: 24px; } }
+
+/* ==========================================================================
+   Case-study close: reflection + next project (tools/figma-export/case-study-end.js)
+   On desktop it uses the same 1440px frame and zoom as the canvas above, so it lines
+   up with the 1136px content column. Colours come from each case study (--cs-*).
+   ========================================================================== */
+.cs-end {
+  --cs-bg: #fff; --cs-ink: #121212; --cs-soft: #90a7af; --cs-accent: #0268ce; --cs-rule: rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;                 /* covers the strip of canvas tucked under the footer */
+  margin-bottom: -64px;       /* the footer's rounded corners sit on this section */
+  padding-bottom: 64px;
+  background: var(--cs-bg);
+  color: var(--cs-ink);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.cs-end--indian-bank { --cs-ink: #090a34; --cs-accent: #0268ce; }
+.cs-end--fermio { --cs-ink: #121212; --cs-accent: #004a3e; }
+.cs-end--lexafide { --cs-bg: #fff; --cs-ink: #000; --cs-soft: #3a3a3a; --cs-accent: #2680ff; }
+.cs-end--sthir { --cs-bg: #1e1e24; --cs-ink: #f7ebe8; --cs-soft: #ffa987; --cs-accent: #e54b4b; --cs-rule: rgba(247, 235, 232, 0.16); }
+
+.cs-end__inner { width: 1136px; margin: 0 auto; padding: 120px 0 72px; }
+@media (min-width: 1024px) { .cs-end { zoom: var(--canvas-zoom, 1); } }
+
+.cs-end__eyebrow { font-size: 16px; line-height: 1.5; letter-spacing: 0.01em; color: var(--cs-soft); }
+.cs-end__cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 64px; margin-top: 16px; }
+.cs-end__title { margin: 0 0 16px; font: 600 24px/1.25 'Inter', system-ui, sans-serif; letter-spacing: 0.01em; color: var(--cs-accent); }
+.cs-end ul { margin: 0; padding-left: 1.2em; }
+.cs-end li { font-size: 16px; line-height: 1.5; letter-spacing: 0.01em; }
+.cs-end li + li { margin-top: 12px; }
+
+.cs-end__next {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 24px;
+  margin-top: 96px;
+  padding: 32px 0;
+  border-top: 1px solid var(--cs-rule);
+  border-bottom: 1px solid var(--cs-rule);
+  color: var(--cs-ink);
+}
+.cs-end__next-label { grid-column: 1; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cs-soft); }
+.cs-end__next-title { grid-column: 1; font: 600 28px/1.25 'Inter', system-ui, sans-serif; letter-spacing: 0.01em; }
+.cs-end__next-name { color: var(--cs-accent); }
+.cs-end__next-arrow { grid-column: 2; grid-row: 1 / span 2; font-size: 40px; line-height: 1; color: var(--cs-accent); transition: transform 0.25s ease; }
+.cs-end__next:hover .cs-end__next-arrow, .cs-end__next:focus-visible .cs-end__next-arrow { transform: translateX(8px); }
+.cs-end__next:focus-visible { outline: 2px solid var(--cs-accent); outline-offset: 6px; }
+@media (prefers-reduced-motion: reduce) { .cs-end__next-arrow { transition: none; } }
+
+@media (max-width: 1023px) {
+  .cs-end__inner { width: auto; max-width: 640px; padding: 56px 20px 48px; }
+  .cs-end__cols { grid-template-columns: 1fr; gap: 32px; }
+  .cs-end__title { font-size: 20px; }
+  .cs-end__next { margin-top: 56px; padding: 24px 0; }
+  .cs-end__next-title { font-size: 20px; }
+  .cs-end__next-arrow { font-size: 28px; }
 }

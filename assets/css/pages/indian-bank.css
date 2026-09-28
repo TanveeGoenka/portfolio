@@ -80,7 +80,7 @@
 .b31{opacity:0.6;}
 .i3{object-fit:cover;filter:blur(2px);opacity:0.24;}
 .b32{background:url(../../img/screenshot-319-4-b8e106.webp) -92.45px -72.54px / 439.37px 247.15px no-repeat;filter:blur(2px);opacity:0.24;}
-.b33{box-shadow:0 1.5px 2.25px 0 rgba(0,0,0,0.3),0 4.5px 7.5px 3px rgba(0,0,0,0.15);}
+.b33{filter:drop-shadow(0 1.5px 1.13px rgba(0,0,0,0.3)) drop-shadow(0 4.5px 3.75px rgba(0,0,0,0.15));}
 .b34{background:#ffffff;border-radius:12px;}
 .b35{background:url(../../img/screenshot-2025-06-24-100805-4-2c2bfd.webp) -0.77px 0.26px / 495px 301.44px no-repeat;}
 .b36{background:linear-gradient(-166.94deg, #897fff 5.92%, #4a3aff 89.21%);box-shadow:0 1.5px 4.5px 0 rgba(74,58,255,0.1),inset 0 0.75px 1.13px 0 rgba(255,255,255,0.25),inset 0 -0.75px 0.75px 0 rgba(0,0,0,0.12),2.25px 0.75px 3.75px 0 rgba(0,0,0,0.15);border-radius:75px;}
@@ -323,3 +323,56 @@
 .mt42{font-family:'Anek Devanagari', sans-serif;font-weight:400;letter-spacing:0.01em;color:#0268ce;font-size:13.5px;line-height:1.5;text-align:left;}
 .mt43{font-family:'Inter', sans-serif;font-weight:500;letter-spacing:-0.05em;color:#ffffff;font-size:13.5px;line-height:1.5;text-align:left;}
 .mt44{font-family:'Inter', sans-serif;font-weight:600;letter-spacing:0.01em;color:#0268ce;font-size:18.2px;line-height:1.4;text-align:center;}
+
+/* ---- Figma instance overrides the exporter dropped (Redesigned Unified Payment Journey) ---- */
+.t86,.t97,.t111{font-size:11px;color:#ffffff;}                 /* status bar time, white on the blue header */
+.b88{outline-color:#ffffff;}                                    /* battery outline */
+.b89{background:#ffffff;}                                       /* battery level */
+.b97,.b108,.b116{background:#ffffff;}                           /* progress: done */
+.b98,.b109{outline-color:#ffffff;}                              /* progress: to do */
+.b93{background:#ceeefa;}                                       /* account avatar */
+.t89{color:#0268ce;}
+.b96,.b102{background:#0268ce;}                                 /* primary buttons */
+.t94,.t95,.t99,.t120{color:#0268ce;}                            /* text buttons and links */
+.b106{outline:0.55px solid #d9d9d9;outline-offset:-0.55px;}      /* Add Note, MMID and Tag fields */
+.b90{outline:0.55px solid #d9eef8;outline-offset:-0.55px;}       /* payee field */
+
+/* ---- Online reviews carousel (Figma prototype: the arrows step through six reviews) ---- */
+.b36,.b37{background:#0268ce;cursor:pointer;}                  /* instance override: blue arrows */
+.rv-slide[hidden]{display:none;}
+
+/* ---- "View Financial Results" accordion (Figma prototype: clicking the card expands it) ---- */
+[data-accordion-toggle]{cursor:pointer;}
+.acc-hit{position:absolute;border-radius:16px;}
+[data-accordion].is-open .b21{background:#0268ce;}
+[data-accordion].is-open .b21 > .b2{transform:rotate(90deg);}
+[data-accordion].is-open .b21 path{fill:#ffffff;}
+.acc-flow *{position:static;}
+.acc-list{margin:0;padding:0 0 0 13.6px;list-style:none;font:400 16px/24px 'Inter', sans-serif;letter-spacing:0.01em;}
+.acc-list li{position:relative;}
+.acc-list li::before{content:"•";position:absolute;left:-13.6px;}
+.acc-flow .acc-list li{white-space:nowrap;}
+.acc-list b{font-weight:600;}
+.acc-up{color:#36b37e;font-weight:600;}
+.acc-src{font:400 12px/18px 'Inter', sans-serif;letter-spacing:0.01em;color:#090a34;}
+.acc-chart{display:block;overflow:visible;}
+.acc-m-body{display:flex;flex-direction:column;gap:16px;margin-top:20px;}
+.acc-m-body[hidden]{display:none;}
+.acc-m-body .acc-src{margin:-8px 0 0;text-align:right;}
+.acc-m-body .m-hint{margin-top:-10px;}
+.acc-m-chart .acc-chart{flex:none;}
+
+/* ---- Persona tooltips (Figma prototype: hovering a persona shows who they are) ---- */
+/* only the painted shapes and characters react to the pointer, not the overlapping group boxes */
+.persona, .persona *{pointer-events:none;}
+.persona path, .persona [style*="clip-path"], .persona [style*="clip-path"] *{pointer-events:auto;}
+.persona{cursor:default;}
+.persona:focus-visible{outline:2px solid #0268ce;outline-offset:2px;border-radius:8px;}
+.tip{box-sizing:border-box;padding:15.3px 12px 0;border-radius:6px;background:#0b1e4a;color:#ffffff;font-family:'Inter', sans-serif;letter-spacing:0.01em;}
+.tip[hidden]{display:none;}
+.tip::before{content:"";position:absolute;left:50%;top:-5px;margin-left:-5px;border:5px solid transparent;border-top:0;border-bottom-color:#0b1e4a;}
+.tip *{position:static;}
+.tip__name{font-size:18px;line-height:22px;font-weight:600;}
+.tip__role{margin-top:5.5px;font-size:14px;line-height:18px;font-weight:600;}
+.tip__text{margin-top:0.8px;font-size:12px;line-height:18px;white-space:nowrap;}
+.tip .tip__close{position:absolute;right:12px;top:10px;width:14px;height:16px;padding:0;border:0;background:none;color:#ffffff;font:400 14px/16px 'Inter', sans-serif;cursor:pointer;}

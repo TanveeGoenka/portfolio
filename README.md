@@ -8,6 +8,7 @@ case-studies/
   indian-bank.html          Legacy to Loyalty      (generated from Figma)
   sthir.html                Sthir                  (generated from Figma)
   fermio.html               Fermio                 (generated from Figma)
+  lexafide.html             Lexafide               (generated from Lexafide from Figma.fig + a hand-written end)
 assets/
   css/site.css              Tokens, header, footer, home page
   css/case-study.css        Shared rules for the case-study canvas and mobile layout
@@ -64,6 +65,8 @@ When the automatic choice for a section is wrong, set a treatment for that layer
   ```
 
   The exporter needs Node 18+, ImageMagick (`magick`) and `ffmpeg`. On macOS: `brew install imagemagick ffmpeg`. Images and videos that already exist are skipped. Delete `assets/img` or `assets/video` to force a fresh export.
+
+- **Lexafide case study:** exported from its own file, `Lexafide from Figma.fig` (put it in the repo root), with `node build.js --only=lexafide`. The Figma canvas stops where the Comms Log chapter ends (`until` in `PAGES`); everything after it (from "The Figma file wasn't the finish line" to Outcomes) is hand-written in `tools/figma-export/lexafide-tail.html`, styled by `assets/css/pages/lexafide-tail.css`, and appended by the exporter. Edit those two files for that part; edit the Figma file for the rest. If ImageMagick isn't installed, the exporter converts images with `sharp` when it can be required (`npm i sharp`, or point `NODE_PATH` at a folder that has it).
 
 ## Known differences from Figma
 
