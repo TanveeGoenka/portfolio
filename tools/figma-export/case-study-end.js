@@ -19,7 +19,7 @@ const PROJECTS = {
   },
   sthir: {
     name: 'Sthir',
-    title: 'An assistive writing device for elderly',
+    title: 'An assistive writing device for the elderly',
     learned: [
       'Time at Krishna Prabhu Old Age Home showed the barrier was fear of failure, not ability, so the product had to build confidence as well as steady the hand.',
       'Testing surfaced a trade-off: prolonged vibration-based stabilisation may cause muscle fatigue over time.',
@@ -40,12 +40,12 @@ const PROJECTS = {
       'Mapping the whole journey (it became very long) showed the breakdown happens at disposal, where a lack of convenience overrides good intent.',
     ],
     next: [
-      'Pilot pickup-on-delivery with Blinkit and Fermio stations at kirana stores in one neighbourhood, to test the 5% to 60% projection.',
+      'Pilot pickup-on-delivery with Blinkit and Fermio stations at kirana stores in one neighbourhood, to test the projected rise in collection rates from 5% to 40–60%.',
       'Prototype the USB-C Battery Health Checker and the rewards flow with families.',
       'Work out how battery tracking would connect manufacturers, government and recyclers.',
     ],
   },
-  // hand-written page (case-studies/lexafide.html), not generated from the Figma file
+  // generated from its own file (Lexafide from Figma.fig); the end of the page is hand-written (lexafide-tail.html)
   lexafide: {
     name: 'Lexafide',
     title: 'Designing for decisions, not automation',

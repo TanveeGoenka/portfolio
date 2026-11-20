@@ -67,6 +67,20 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
 
+/* keyboard users can jump past the header; hidden until focused */
+.skip-link {
+  position: fixed;
+  top: 12px; left: 12px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 365px;
+  background: var(--teal-700);
+  font: 600 var(--text-sm)/1.2 var(--font-sans);
+  color: var(--white);
+  transform: translateY(calc(-100% - 24px));
+}
+.skip-link:focus-visible { transform: none; outline-color: var(--ink); }
+
 /* --------------------------------------------------------------------------
    Header (Div [framer-lnfr45])
    -------------------------------------------------------------------------- */
@@ -91,7 +105,9 @@ a { color: inherit; text-decoration: none; }
 /* over dark backgrounds the name and links switch to light */
 .site-header .brand__name, .site-header .site-nav a { transition: color 0.2s ease; }
 .site-header.is-dark .brand__name { color: #fff; }
-.site-header.is-dark .site-nav { color: rgba(255, 255, 255, 0.78); }
+/* the teal monogram disappears on saturated and dark heroes (1.2:1 on Lexafide's blue), so it turns white with the name */
+.site-header.is-dark .brand__mark { filter: brightness(0) invert(1); }
+.site-header.is-dark .site-nav { color: #fff; }
 .site-header.is-dark .site-nav a:hover { color: #fff; }
 .site-header.is-hidden { transform: translateY(-100%); }
 .site-header .site-nav { font-size: var(--text-sm); gap: 32px; }
@@ -142,7 +158,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   padding: 60px 47px 55px 48px;
   border-radius: 64px 64px 0 0;
-  background: var(--teal);
+  background: var(--teal-700);   /* white text needs the darker teal to reach 4.5:1 (5.1:1; #00959f was 3.6:1) */
   color: var(--white);
 }
 .site-footer__id {
@@ -157,7 +173,7 @@ a { color: inherit; text-decoration: none; }
   font: 400 var(--text-xs)/1.4 var(--font-sans);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--teal-100);
+  color: var(--white);
 }
 .site-footer__nav {
   display: flex;
@@ -182,301 +198,14 @@ a { color: inherit; text-decoration: none; }
 .site-footer__copy {
   margin-top: 3px;
   font: 400 var(--text-sm)/1.4 var(--font-sans);
-  color: var(--teal-100);
+  color: var(--white);
 }
 .site-footer__social { display: flex; gap: 32px; }
 .site-footer__social a { display: block; transition: opacity 0.2s ease; }
 
 /* --------------------------------------------------------------------------
-   Home: shared bits
+   The home page has its own stylesheet (assets/css/home.css)
    -------------------------------------------------------------------------- */
-.home,
-#case-studies { display: flex; flex-direction: column; gap: 60px; }
-.home { padding-bottom: 60px; }
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 32px;
-  background: var(--pill);
-  font: 500 var(--text-xs)/1.4 var(--font-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-.eyebrow svg { width: 15px; height: 15px; }
-.eyebrow .icon-folder { color: #31bda3; }
-
-.section-title {
-  font: 600 var(--text-3xl)/1.15 var(--font-display);
-  color: var(--ink);
-  text-align: center;
-}
-
-.section-head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 40px 24px;
-}
-
-/* --------------------------------------------------------------------------
-   Hero (Home)
-   -------------------------------------------------------------------------- */
-.hero {
-  position: relative;
-  height: 781px;
-  background: linear-gradient(112.48deg, #fff 0%, #ecf9fa 75.77%, #f8fdfe 95.89%);
-}
-.hero__intro {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding-top: 300px;
-  text-align: center;
-}
-.hero__welcome {
-  padding: 2px 0;
-  font: 400 var(--text-lg)/1.2 var(--font-sans);
-  color: var(--ink);
-}
-.hero__rotator {
-  display: grid;
-  width: min(917px, 100%);
-  padding: 0 36px;
-  font: 600 var(--text-4xl)/1.35 var(--font-display);
-  color: var(--ink);
-}
-/* every phrase sits in the same grid cell, so the box never jumps */
-.hero__rotator span {
-  grid-area: 1 / 1;
-  opacity: 0;
-  transition: opacity 0.1s cubic-bezier(0, 0, 0.58, 1);
-}
-.hero__rotator span.is-active { opacity: 1; }
-.hero__rotator span:not(.is-active) { visibility: hidden; }
-
-.contact {
-  position: absolute;
-  left: 24px;
-  bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.contact__label {
-  font: 500 var(--text-xs)/1.4 var(--font-sans);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.contact__links {
-  display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  font: 400 var(--text-xs)/1.4 var(--font-sans);
-  color: var(--ink);
-}
-.contact__links a {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.contact__links a:hover span { text-decoration: underline; text-underline-offset: 2px; }
-.contact__links .icon-id-card { width: 24px; height: 24px; }
-.contact__links .icon-linkedin-small { width: 17px; height: 17px; }
-
-/* --------------------------------------------------------------------------
-   Case study cards (Div [framer-p4r1wx])
-   -------------------------------------------------------------------------- */
-.projects {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 60px;
-  padding: 40px 24px;
-}
-.project {
-  width: min(1145px, 100%);
-  padding: 48px;
-  border-radius: 40px;
-  background: var(--teal-tint);
-}
-.project__row {
-  display: flex;
-  align-items: center;
-  gap: 50px;
-}
-.project__body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 462px;
-  min-height: 335.6px;
-  flex: none;
-}
-.project__label {
-  font: 500 var(--text-xs)/1.4 var(--font-sans);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.project__title {
-  margin-top: 0;
-  font: 600 var(--text-2xl)/1.3 var(--font-display);
-  color: var(--ink);
-}
-.project__text {
-  min-height: 70px;
-  margin-top: 8px;
-  font: 400 var(--text-base)/1.6 var(--font-sans);
-  color: var(--ink-soft);
-}
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 16px 0 24px;
-  list-style: none;
-}
-.tag {
-  padding: 7px;
-  border: 1px solid rgba(0, 122, 130, 0.45);
-  border-radius: 100px;
-  background: rgba(0, 149, 159, 0.05);
-  font: 500 var(--text-xs)/1.3 var(--font-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--teal-700);
-}
-.button {
-  position: relative;
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  height: 48.8px;
-  padding: 0 24px;
-  overflow: hidden;
-  border-radius: 365px;
-  background: var(--teal-700);
-  font: 600 var(--text-sm)/1.2 var(--font-sans);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--white);
-}
-/* Variant2 (hover) adds a 20% black layer */
-.button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.2);
-  opacity: 0;
-  transition: opacity 0.1s cubic-bezier(0, 0, 0.58, 1);
-}
-.button:hover::after,
-.button:focus-visible::after { opacity: 1; }
-.project__media {
-  flex: 1 1 auto;
-  min-width: 0;
-  aspect-ratio: 537 / 324;
-  border-radius: 9.37px;
-  overflow: hidden;
-  background: #c4c4c4;
-}
-.project__media img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.project--media-first .project__media { background: #1e1e24; }
-.project--lexafide .project__media { background: #f4f4f5; }
-
-/* the whole card is one link: the title link stretches over the card, the button is its visual cue */
-.project { position: relative; transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.project__link::after { content: ""; position: absolute; inset: 0; border-radius: inherit; z-index: 1; }
-.project__link:focus-visible { outline: none; }
-.project:has(.project__link:focus-visible) { outline: 2px solid var(--teal-700); outline-offset: 4px; }
-.project__media img { transition: transform 0.4s ease; }
-.project:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -18px rgba(0, 73, 78, 0.28); }
-.project:hover .project__media img { transform: scale(1.04); }
-.project:hover .button::after { opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .project, .project__media img { transition: none; }
-  .project:hover { transform: none; }
-  .project:hover .project__media img { transform: none; }
-}
-
-/* role, timeline, team */
-.project__meta { display: grid; gap: 8px; margin: 20px 0 0; }
-.project__meta div { display: grid; grid-template-columns: 88px minmax(0, 1fr); align-items: baseline; gap: 16px; }
-.project__meta dt { font: 500 var(--text-xs)/1.4 var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
-.project__meta dd { margin: 0; font: 400 var(--text-sm)/1.4 var(--font-sans); color: var(--ink); }
-
-/* --------------------------------------------------------------------------
-   Key strengths (Div [framer-1vkt6qh])
-   -------------------------------------------------------------------------- */
-.strengths {
-  padding: 120px 24px;
-}
-.strengths__inner {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: min(1152px, 100%);
-  margin: 0 auto;
-}
-.strengths__grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 24px;
-  list-style: none;
-  padding: 0;
-}
-.strength {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  min-height: 127px;
-  padding: 24px;
-  border-radius: 24px;
-  background: var(--teal-tint);
-}
-.strength__icon {
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 27px;               /* one title line, so the icon sits level with the title */
-  padding: 0;
-  color: var(--teal-500);
-}
-.strength__icon svg { overflow: visible; }
-.strength__title {
-  font: 600 var(--text-lg)/1.35 var(--font-display);
-  color: var(--ink);
-}
-.strength__text {
-  margin-top: 4px;
-  font: 400 var(--text-sm)/1.5 var(--font-sans);
-  color: var(--ink-soft);
-}
-
-/* --------------------------------------------------------------------------
-   Smaller screens (the Figma file only has the 1440px desktop design, so
-   these rules keep the same look while letting the layout reflow)
-   -------------------------------------------------------------------------- */
-@media (max-width: 1100px) {
-  .project__row { flex-direction: column; align-items: stretch; gap: 32px; }
-  .project--media-first .project__row { flex-direction: column-reverse; }
-  .project__body { width: auto; }
-  .project__media { width: 100%; }
-  .strengths__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
 
 @media (max-width: 760px) {
   :root { --header-h: 60px; }
@@ -484,16 +213,9 @@ a { color: inherit; text-decoration: none; }
   .site-header .brand { transform: scale(0.56); margin: 0 -81.4px -44px 0; }
   .site-header .site-nav { gap: 16px; font-size: 14px; }
   .site-nav a:nth-child(1) { display: none; }
-  .hero { height: auto; min-height: 640px; padding-bottom: 140px; }
-  .hero__intro { padding-top: 220px; }
-  .hero__rotator { font-size: var(--text-2xl); line-height: 1.3; padding: 0 20px; }
-  .section-title { font-size: var(--text-2xl); line-height: 1.2; }
-  .projects { padding: 24px 16px; gap: 32px; }
-  .project { padding: 24px; border-radius: 28px; }
-  .project__title { font-size: var(--text-xl); line-height: 1.3; }
-  .project__title br, .project__text br { display: none; }
-  .strengths { padding: 72px 16px; }
-  .strengths__grid { grid-template-columns: 1fr; }
+  /* taller tap targets without moving anything: the links were 17px tall */
+  .site-header .site-nav a { padding: 12px 0; }
+  .site-footer__nav a { padding: 8px 0; }
   .site-footer__inner { padding: 48px 20px 32px; border-radius: 40px 40px 0 0; }
   .site-footer__nav { gap: 20px; flex-wrap: wrap; }
 }

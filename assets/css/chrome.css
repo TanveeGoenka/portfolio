@@ -1,0 +1,66 @@
+/* Shared site chrome: the header and footer from the Connect the Dots homepage.
+   Loaded by the home page and by every case study, so the whole site opens and closes the same way.
+   Case-study bodies keep their own styles; only these two pieces are shared. */
+:root {
+  --dots-ink: #111111;
+  --dots-paper: #ffffff;
+  --dots-pink: #F5A8BC;
+  --dots-red: #EE4B2B;
+  --dots-yellow: #F7D038;
+  --dots-blue: #2E64B5;
+  --dots-gut: clamp(16px, 2.4vw, 32px);
+  --dots-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --dots-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --dots-out: cubic-bezier(.2, .8, .2, 1);
+}
+
+/* marks as inline glyphs */
+.mk { display: inline-block; flex: none; width: .82em; height: .82em; background: var(--dots-ink); vertical-align: -.04em; }
+.mk.c { border-radius: 50%; }
+.mk.red { background: var(--dots-red); } .mk.yellow { background: var(--dots-yellow); } .mk.blue { background: var(--dots-blue); } .mk.pink { background: var(--dots-pink); } .mk.ink { background: var(--dots-ink); }
+
+/* ───────────── header ───────────── */
+.dots-head { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px var(--dots-gut) 0; color: var(--dots-ink); font-family: var(--dots-sans); }
+.dots-head .id { display: inline-flex; flex-direction: column; justify-content: center; min-height: 44px; text-decoration: none; line-height: 1.4; color: inherit; }
+.dots-head .id strong { font-weight: 600; font-size: 16px; letter-spacing: -.01em; }
+.dots-head .id span { font: 400 12px/1.4 var(--dots-mono); }
+.dots-nav { display: flex; gap: clamp(14px, 2.4vw, 34px); }
+.dots-nav a { display: inline-flex; align-items: center; min-height: 44px; font: 500 15.5px/1.2 var(--dots-sans); color: inherit; text-decoration: none; background: linear-gradient(currentColor, currentColor) no-repeat 0 calc(50% + .75em) / 0 1.5px; transition: background-size .35s var(--dots-out); }
+.dots-nav a:hover, .dots-nav a:focus-visible, .dots-nav a[aria-current="page"] { background-size: 100% 1.5px; }
+
+/* on case studies the header is the fixed .site-header (main.js hides it while scrolling down and tints it) */
+.site-header.dots-head { height: auto; min-height: var(--header-h); align-items: center; padding: 6px var(--dots-gut); }
+.site-header.dots-head.is-dark { color: #fff; }
+
+/* ───────────── footer / contact ───────────── */
+.dots-foot { background: var(--dots-ink); color: #fff; padding: clamp(72px, 9vw, 130px) 0 0; position: relative; font-family: var(--dots-sans); }
+.dots-foot__in { max-width: 1360px; margin: 0 auto; padding: 0 var(--dots-gut); }
+.dots-foot__h { margin: 0; font-weight: 600; font-size: clamp(44px, 8vw, 124px); line-height: .92; letter-spacing: -.045em; }
+.dots-foot__lede { margin: clamp(18px, 2vw, 28px) 0 0; font-size: clamp(17px, 1.5vw, 21px); max-width: 29em; color: #ededed; line-height: 1.5; }
+.dots-foot__mail { display: inline-flex; align-items: center; gap: .45em; margin-top: clamp(32px, 4vw, 56px); min-height: 48px; font-weight: 500; font-size: clamp(21px, 4.3vw, 60px); letter-spacing: -.035em; line-height: 1.1; color: #fff; text-decoration: none; max-width: 100%; }
+.dots-foot__mail span { background: linear-gradient(#fff, #fff) no-repeat 0 100% / 100% 2px; padding-bottom: .08em; transition: color .2s; overflow-wrap: anywhere; }
+.dots-foot__mail .mk { width: .5em; height: .5em; transition: transform .45s var(--dots-out); }
+.dots-foot__mail:hover .mk { transform: scale(1.5); }
+.dots-foot__mail:hover span { color: var(--dots-yellow); background-image: linear-gradient(var(--dots-yellow), var(--dots-yellow)); }
+.dots-foot__reach { display: flex; flex-wrap: wrap; gap: 10px; margin: clamp(24px, 3vw, 40px) 0 0; padding: 0; list-style: none; }
+.dots-foot__reach a { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 18px; border: 1.5px solid #fff; font: 500 14px var(--dots-mono); color: #fff; text-decoration: none; transition: background-color .18s, color .18s; }
+.dots-foot__reach a .mk { width: 11px; height: 11px; transition: transform .45s var(--dots-out); }
+.dots-foot__reach a:hover { background: #fff; color: var(--dots-ink); }
+.dots-foot__reach a:hover .mk { transform: scale(1.4) rotate(90deg); }
+.dots-foot :focus-visible { outline: 2px solid var(--dots-yellow); outline-offset: 3px; }
+.dots-foot .strip { margin-top: clamp(64px, 8vw, 120px); line-height: 0; min-height: 80px; }
+.dots-foot .strip svg { display: block; width: 100%; height: auto; }
+.dots-foot__foot { max-width: 1360px; margin: 0 auto; padding: 22px var(--dots-gut) 40px; font: 400 12px/1.6 var(--dots-mono); color: #d6d6d6; }
+
+@media (max-width: 699px) {
+  .dots-head .id span { display: none; }
+  .dots-head { padding-top: 8px; }
+  .dots-nav a { font-size: 14.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dots-nav a, .dots-foot__mail .mk, .dots-foot__reach a .mk { transition: none; }
+}
+
+/* case-study.css makes .site-footer transparent; the dark contact block wins here */
+body.case-study .site-footer.dots-foot { background: var(--dots-ink); z-index: 2; }
+.dots-foot h2.dots-foot__h { color: #fff; }

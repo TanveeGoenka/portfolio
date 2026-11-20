@@ -212,6 +212,10 @@ module.exports = function install(Exporter, H) {
       }
       if (bl.group) return this.mfigure(bl.group.map(g => g.tn), bl.b, bl.vis);
       const tn = bl.tn, n = tn.node;
+      // nodes the desktop canvas draws from a replacement image (build.js `replace`) use the same image here,
+      // instead of reflowing the layers it stands in for
+      const rep = this.replace && this.replace[gid(n.guid)];
+      if (rep) return `<img class="m-img" style="aspect-ratio:${r2(bl.b.w)}/${r2(bl.b.h)};max-width:${px(bl.b.w)};object-fit:cover;object-position:top" src="${rep}" alt="" loading="lazy" decoding="async">`;
       const mode = this.override(n);
       if (mode === 'figure' || mode === 'scroll' || mode === 'scroll-center') return this.mfigure([tn], bl.b, bl.vis, mode === 'scroll' || mode === 'scroll-center', mode === 'scroll-center');
       if (n.type === 'TEXT') return this.mtext(n);

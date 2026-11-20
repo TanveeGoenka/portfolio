@@ -146,6 +146,107 @@
     tip.querySelector('.tip__close')?.addEventListener('click', () => hide(0));
   });
 
+  // Case-study section index (bottom right): appears while the page scrolls, fades once it's still.
+  // Targets are found in whichever layout is showing (desktop canvas or mobile); see fixes.js INDEX.
+  const index = document.querySelector('[data-cs-index]');
+  if (index) {
+    const items = [...index.querySelectorAll('[data-target]')];
+    const toggle = index.querySelector('.cs-index__toggle');
+    const count = index.querySelector('[data-cs-count]');
+    const current = index.querySelector('[data-cs-current]');
+    const shown = el => el && el.getClientRects().length > 0;
+    const norm = t => t.replace(/\s+/g, ' ').trim();
+    const find = target => {
+      if (/^[#.]/.test(target)) return document.querySelector(target);
+      const roots = [...document.querySelectorAll('.canvas-wrap, .m-page, main > .lx, main > section.lx-sec, main')].filter(shown);
+      for (const root of roots) {
+        for (const el of root.querySelectorAll('h1, h2, h3, p')) if (shown(el) && norm(el.textContent).startsWith(target)) return el;
+      }
+      return null;
+    };
+    let targets = [];
+    const resolve = () => { targets = items.map(b => find(b.dataset.target)); };
+    const top = el => el.getBoundingClientRect().top + window.scrollY;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let active = -1;
+    const setActive = () => {
+      const line = window.innerHeight * 0.35;
+      let i = -1;
+      targets.forEach((el, k) => { if (el && el.getBoundingClientRect().top <= line) i = k; });
+      if (i === active) return;
+      active = i;
+      items.forEach((b, k) => b.toggleAttribute('aria-current', k === i));
+      const k = Math.max(0, i);
+      count.textContent = `${k + 1}/${items.length}`;
+      current.textContent = items[k].textContent;
+    };
+    // the wash takes the colour of whatever is behind the corner (like the header), with light text on dark
+    const footer = document.querySelector('.site-footer');
+    const colourAt = (x, y) => {
+      for (const el of document.elementsFromPoint(x, y)) {
+        if (index.contains(el)) continue;
+        if (el.matches('img, video, image') || el.closest('svg')) return null; // photos: no single colour
+        const m = getComputedStyle(el).backgroundColor.match(/rgba?\(([^)]+)\)/);
+        if (!m) continue;
+        const c = m[1].split(/[ ,/]+/).map(Number);
+        if ((c[3] ?? 1) > 0.5) return c.slice(0, 3);
+      }
+      return [255, 255, 255];
+    };
+    let tintQueued = false;
+    const tint = () => {
+      tintQueued = false;
+      const w = window.innerWidth, h = window.innerHeight;
+      // sample where the labels sit; the colour behind most of them wins (photos count as no colour)
+      const list = index.querySelector('.cs-index__list').getBoundingClientRect();
+      const ys = list.height ? [0.15, 0.4, 0.65, 0.9].map(f => list.top + list.height * f) : [h - 120, h - 60];
+      const seen = ys.map(y => colourAt(w - 90, Math.min(h - 4, y))).filter(Boolean);
+      const lum = c => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+      const darkVotes = seen.filter(c => lum(c) < 110).length;
+      const pool = seen.filter(c => (lum(c) < 110) === (darkVotes > seen.length / 2));
+      const rgb = pool[pool.length >> 1] || [255, 255, 255];
+      index.style.setProperty('--idx-rgb', rgb.join(', '));
+      index.classList.toggle('is-dark', 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] < 110);
+    };
+    const queueTint = () => { if (!tintQueued) { tintQueued = true; requestAnimationFrame(tint); } };
+    // the footer has its own navigation, so the index steps aside for it
+    const atFooter = () => footer && footer.getBoundingClientRect().top < window.innerHeight - 40;
+
+    let timer;
+    const hold = () => !atFooter() && (index.matches(':hover, :focus-within') || toggle.getAttribute('aria-expanded') === 'true');
+    const hide = () => { if (!hold()) index.classList.remove('is-visible'); };
+    const onScroll = () => {
+      setActive();
+      queueTint();
+      // not over the case study's own opening screen, and not over the footer
+      index.classList.toggle('is-visible', !atFooter() && (window.scrollY > window.innerHeight * 0.6 || hold()));
+      clearTimeout(timer);
+      timer = setTimeout(hide, 1400);
+    };
+    resolve();
+    setActive();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', () => { resolve(); setActive(); }, { passive: true });
+    window.addEventListener('load', () => { resolve(); setActive(); });
+    index.addEventListener('mouseleave', () => { clearTimeout(timer); timer = setTimeout(hide, 900); });
+    index.addEventListener('focusout', () => { clearTimeout(timer); timer = setTimeout(hide, 900); });
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', String(open));
+      index.classList.toggle('is-open', open);
+    });
+    items.forEach((b, k) => b.addEventListener('click', () => {
+      resolve();
+      const el = targets[k];
+      if (!el) return;
+      const header = document.querySelector('.site-header');
+      window.scrollTo({ top: top(el) - (header ? header.offsetHeight : 0) - 16, behavior: still.matches ? 'auto' : 'smooth' });
+      toggle.setAttribute('aria-expanded', 'false');
+      index.classList.remove('is-open');
+    }));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && index.classList.contains('is-open')) { toggle.click(); toggle.focus(); } });
+  }
+
   // Videos show their poster with a play button and load only when clicked; they pause when scrolled off-screen
   const videos = document.querySelectorAll('video[data-src]');
   const io = 'IntersectionObserver' in window && new IntersectionObserver(entries => {

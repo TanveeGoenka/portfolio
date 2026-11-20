@@ -139,7 +139,7 @@ video.m-img { background: #000; }
    up with the 1136px content column. Colours come from each case study (--cs-*).
    ========================================================================== */
 .cs-end {
-  --cs-bg: #fff; --cs-ink: #121212; --cs-soft: #90a7af; --cs-accent: #0268ce; --cs-rule: rgba(0, 0, 0, 0.1);
+  --cs-bg: #fff; --cs-ink: #121212; --cs-soft: #587178; --cs-accent: #0268ce; --cs-rule: rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;                 /* covers the strip of canvas tucked under the footer */
   margin-bottom: -64px;       /* the footer's rounded corners sit on this section */
@@ -190,3 +190,82 @@ video.m-img { background: #000; }
   .cs-end__next-title { font-size: 20px; }
   .cs-end__next-arrow { font-size: 28px; }
 }
+
+/* ==========================================================================
+   Section index (bottom right): part of the shell, so it uses the shell's type and teal.
+   It appears while the page scrolls and fades once the reader stops (main.js); it stays
+   while hovered or focused. On phones it is a single pill that opens into the list.
+   ========================================================================== */
+.cs-index {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 110px 24px 22px 150px;
+  /* no box: a soft wash that fades out from the corner, enough to keep the labels readable over any page */
+  --idx-rgb: 255, 255, 255; /* the colour behind the corner, set by main.js */
+  background: radial-gradient(ellipse 100% 100% at 100% 100%, rgba(var(--idx-rgb), 0.95) 0%, rgba(var(--idx-rgb), 0.9) 58%, rgba(var(--idx-rgb), 0) 100%);
+  font-family: var(--font-sans);
+  text-align: right;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+}
+.cs-index.is-visible, .cs-index:focus-within { opacity: 1; transform: none; pointer-events: auto; }
+.cs-index__toggle { display: none; }
+.cs-index__list { margin: 0; padding: 0; list-style: none; }
+.cs-index__list button {
+  position: relative;
+  display: inline-block;
+  padding: 5px 18px 5px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: 500 13px/1.3 var(--font-sans);
+  text-align: right;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.cs-index__list button::before {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(0, 122, 130, 0.4);
+  transform: translateY(-50%);
+}
+.cs-index__list button:hover { color: var(--ink); }
+.cs-index__list button[aria-current] { color: var(--teal-700); font-weight: 600; }
+.cs-index__list button[aria-current]::before { width: 6px; height: 6px; right: 3px; background: var(--teal-700); }
+/* over dark sections */
+.cs-index.is-dark .cs-index__list button, .cs-index.is-dark .cs-index__toggle { color: rgba(255, 255, 255, 0.8); }
+.cs-index.is-dark .cs-index__list button:hover, .cs-index.is-dark .cs-index__list button[aria-current] { color: #fff; }
+.cs-index.is-dark .cs-index__list button::before { background: rgba(255, 255, 255, 0.5); }
+.cs-index.is-dark .cs-index__list button[aria-current]::before, .cs-index.is-dark .cs-index__count { background: #fff; color: #fff; }
+.cs-index.is-dark .cs-index__count { background: none; }
+
+@media (max-width: 760px) {
+  .cs-index { padding: 56px 12px 10px 64px; }
+  .cs-index__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 8px;
+    border: 0;
+    background: none;
+    font: 600 13px/1 var(--font-sans);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .cs-index__count { font-variant-numeric: tabular-nums; color: var(--teal-700); }
+  .cs-index__list { display: none; }
+  .cs-index.is-open { padding-top: 110px; padding-left: 200px; background: radial-gradient(ellipse 100% 100% at 100% 100%, rgb(var(--idx-rgb)) 0%, rgba(var(--idx-rgb), 0.97) 68%, rgba(var(--idx-rgb), 0) 100%); }
+  .cs-index.is-open .cs-index__list { display: block; }
+  .cs-index__list button { padding: 10px 20px 10px 8px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .cs-index { transition: none; transform: none; } }

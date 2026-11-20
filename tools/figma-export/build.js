@@ -12,6 +12,7 @@ const { execFileSync } = require('child_process');
 const { load, index, buildTree, gid } = require('./fig');
 const partials = require('./partials');
 const { caseStudyEnd } = require('./case-study-end');
+const { fixHTML, fixCSS, socialMeta, ogImage } = require('./fixes');
 
 const ROOT = path.resolve(__dirname, '../..');
 const ARGS = process.argv.slice(2);
@@ -29,7 +30,7 @@ const OUT = {
 const PAGES = [
   { id: '1:2024', slug: 'indian-bank', title: 'Legacy to Loyalty: Reimagining Indian Bank', description: 'Converting a legacy brand into a loyal one: a business-backed rebrand and redesign of Indian Bank\'s core payments journey.' },
   { id: '1:3343', slug: 'sthir', title: 'Sthir: An assistive writing device for the elderly', description: 'A writing product that enhances confidence, independence, and ease of use for elderly people with hand tremors.' },
-  { id: '1:1159', slug: 'fermio', title: 'Fermio: A user-centred battery disposal service', description: 'Transforming battery disposal into a seamless, rewarded family ritual that can increase collection rates to 60%.' },
+  { id: '1:1159', slug: 'fermio', title: 'Fermio: A user-centred battery disposal service', description: 'Transforming battery disposal into a seamless, rewarded family ritual projected to raise collection rates from 5% to 40–60%.' },
   // Lexafide has its own Figma file. The canvas stops where the Comms Log chapter ends (`until`, in px of
   // the frame); the rest of the page is hand-written HTML (`tail`) styled by `css`, followed by the close.
   {
@@ -129,6 +130,8 @@ const MOBILE_OVERRIDES = {
   },
   lexafide: {
     '6:653': 'skip', // hero background stripes: decoration that would otherwise stack as dozens of thin figures
+    '6:850': 'skip', '6:925': 'skip', // the chapter timeline's rails: on a phone they stand alone as tall empty lines
+    '6:680': 'solo', '6:688': 'figure', // hero: the title flows as text and the screenshots follow as one picture (they overlap, so they were merged into one swipe strip)
     '6:1754': 'scroll-center', // the 214 iterations band: cropped around its title on phones (lexafide-tail.css)
   },
 };
@@ -484,7 +487,8 @@ class Exporter {
           if (lt === 'ORDERED_LIST') { counters[td.lines[para].indentationLevel] = (counters[td.lines[para].indentationLevel] || 0) + 1; sym = counters[td.lines[para].indentationLevel] + '.'; }
           marker = `<span class="li" style="left:${px(mx)}" aria-hidden="true">${sym}</span>`;
         }
-        inner += `<span class="ln"${st ? ` style="${st}"` : ''}${process.env.DEBUG_BASELINES ? ` data-by="${r2(b.position.y)}"` : ''}>${marker}${txt || ''}</span>`;
+        // a space between lines: invisible between block-level lines, but keeps words apart for screen readers and search
+        inner += `${inner ? ' ' : ''}<span class="ln"${st ? ` style="${st}"` : ''}${process.env.DEBUG_BASELINES ? ` data-by="${r2(b.position.y)}"` : ''}>${marker}${txt || ''}</span>`;
       });
     } else {
       inner = runs(0, chars.length).replace(/\n/g, '<br>');
@@ -781,6 +785,7 @@ class Exporter {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(cfg.title)} | Tanvee Goenka</title>
 <meta name="description" content="${esc(cfg.description)}">
+${socialMeta({ title: `${cfg.title} | Tanvee Goenka`, description: cfg.description, url: `case-studies/${cfg.slug}.html`, image: ogImage(cfg.slug) })}
 <link rel="icon" href="../assets/img/logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -789,12 +794,13 @@ class Exporter {
 <link rel="stylesheet" href="../assets/css/case-study.css">
 <link rel="stylesheet" href="../assets/css/pages/${cfg.slug}.css">${(cfg.css || []).map(c => `
 <link rel="stylesheet" href="../assets/css/pages/${c}">`).join('')}
+${partials.HEAD}
 <script src="../assets/js/main.js" defer></script>
 </head>
-<body class="case-study">
+<body class="case-study" id="top">
 ${partials.header({ base: '../index.html' })}
 <!-- Generated from Figma by tools/figma-export/build.js. Re-run the script instead of editing layout by hand. -->
-<main>
+<main id="main">
 <div class="canvas-wrap">
 <div class="canvas" style="height:${px(height)};background:${rootBg}${cfg.until ? ';margin-bottom:0' : ''}" data-width="1440">
 ${body}
@@ -805,7 +811,7 @@ ${mobile}
 ${tailHTML}
 ${caseStudyEnd(cfg.slug)}
 </main>
-${partials.footer({ base: '../index.html' })}
+${partials.footer()}
 </body>
 </html>
 `;
@@ -828,8 +834,10 @@ ${partials.footer({ base: '../index.html' })}
       }
     }
     for (const [text, href] of Object.entries(cfg.links || {})) out = out.split(esc(text)).join(`<a href="${href}" target="_blank" rel="noopener">${esc(text)}</a>`);
+    // corrections that aren't in the Figma files yet (fixes.js)
+    out = fixHTML(cfg.slug, out);
     fs.writeFileSync(path.join(OUT.pages, cfg.slug + '.html'), out);
-    fs.writeFileSync(path.join(OUT.css, cfg.slug + '.css'), `/* Generated from Figma: ${cfg.title} */\n` + this.sheet.toString());
+    fs.writeFileSync(path.join(OUT.css, cfg.slug + '.css'), fixCSS(cfg.slug, `/* Generated from Figma: ${cfg.title} */\n` + this.sheet.toString()));
     console.log(`page ${cfg.slug}: ${(html.length / 1024).toFixed(0)} KB html, ${this.sheet.rules.length} css rules`);
   }
 
